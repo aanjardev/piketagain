@@ -1313,6 +1313,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerCapsule
       objectReference: {fileID: 0}
+    - target: {fileID: 8219640018308424985, guid: 95e992fbebcaeaa40bc3dee8f9a0e745, type: 3}
+      propertyPath: PauseSceneName
+      value: PauseScreen
+      objectReference: {fileID: 0}
     - target: {fileID: 8459833555736053520, guid: 95e992fbebcaeaa40bc3dee8f9a0e745, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.66886
