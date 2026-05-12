@@ -6,7 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("Scene Names")]
     public string pauseSceneName = "PauseScreen";
-    public string gameplaySceneName = "Gameplay";
+    public string gameplaySceneName = "classroom";
     public string mainMenuSceneName = "HomeScreen";
 
     public void Resume()

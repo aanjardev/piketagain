@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using StarterAssets;
 
-public class LoseMenu : MonoBehaviour
+public class WinMenu : MonoBehaviour
 {
     [Header("Scene Names")]
-    public string gameplaySceneName = "Gameplay";
+    public string gameplaySceneName = "classroom";
     public string mainMenuSceneName = "HomeScreen";
 
-    public void TryAgain()
+    public void PlayAgain()
     {
         FirstPersonController.SetPauseState(false);
         SceneManager.LoadScene(gameplaySceneName, LoadSceneMode.Single);
