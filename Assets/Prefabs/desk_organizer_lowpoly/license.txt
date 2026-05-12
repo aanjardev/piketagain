@@ -1,0 +1,11 @@
+Model Information:
+* title:	Desk organizer (lowpoly)
+* source:	https://sketchfab.com/3d-models/desk-organizer-lowpoly-c159089a79924369acaaa6ba0a1a2d7d
+* author:	Zuckergelee (https://sketchfab.com/knorke)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Desk organizer (lowpoly)" (https://sketchfab.com/3d-models/desk-organizer-lowpoly-c159089a79924369acaaa6ba0a1a2d7d) by Zuckergelee (https://sketchfab.com/knorke) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
