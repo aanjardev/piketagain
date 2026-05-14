@@ -22,7 +22,7 @@ public class DustItem : MonoBehaviour, IInteractable
     void Awake()
     {
         // Mencari script pemain secara otomatis
-        _player = FindObjectOfType<PlayerInteraction>();
+        _player = FindAnyObjectByType<PlayerInteraction>();
 
         if (wipeSound != null)
         {

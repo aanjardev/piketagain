@@ -58,7 +58,7 @@ public class FurnitureTidy : MonoBehaviour, IInteractable
     {
         if (_isTidy) return "";
 
-        PlayerInteraction pi = FindObjectOfType<PlayerInteraction>();
+        PlayerInteraction pi = FindAnyObjectByType<PlayerInteraction>();
         if (pi != null && pi.currentTool != ToolType.Tangan)
             return "Butuh Tangan Kosong (Tekan 1)";
 

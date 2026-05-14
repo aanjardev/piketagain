@@ -40,6 +40,7 @@ public class PlayerInteraction : MonoBehaviour
     private GameObject    _heldItem;
     private IInteractable _heldInteractable;
     private Camera _cam;
+    public GameObject heldItem => _heldItem;
 
     // -----------------------------------------------------------------------
     void Awake()

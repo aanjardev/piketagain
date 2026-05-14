@@ -4,58 +4,75 @@ using UnityEngine;
 //  BOOKSHELF SLOT
 // =============================================================================
 
-/// <summary>
-/// Attach one BookshelfSlot per book slot on your Bookshelf model.
-/// Each slot is an empty child GameObject positioned where a book should sit.
-/// </summary>
 public class BookshelfSlot : MonoBehaviour, IInteractable
 {
-    [Tooltip("Maximum number of books this slot can hold.")]
+    [Tooltip("Maksimal buku yang bisa ditaruh di slot ini.")]
     public int capacity = 1;
 
     private int _booksPlaced;
+    private Outline _outline;
 
-    // -----------------------------------------------------------------------
     public bool IsFull => _booksPlaced >= capacity;
+
+    void Awake()
+    {
+        // Menambahkan dukungan Quick Outline agar slotnya menyala saat disorot
+        _outline = GetComponent<Outline>();
+        if (_outline != null) _outline.enabled = false;
+    }
 
     // -----------------------------------------------------------------------
     #region IInteractable
 
     public void OnLookAt()
     {
-        // Optionally glow the slot to guide the player
-        Debug.Log($"BookshelfSlot '{name}': {_booksPlaced}/{capacity} books.");
+        if (!IsFull && _outline != null) 
+            _outline.enabled = true;
     }
 
-    public void OnLookAway() { }
+    public void OnLookAway() 
+    { 
+        if (_outline != null) 
+            _outline.enabled = false; 
+    }
 
-    public string GetPromptText() =>
-        IsFull ? "Shelf full" : "[E] Place Book";
+    public string GetPromptText()
+    {
+        if (IsFull) return "Rak Penuh";
+
+        // Cek apakah pemain sedang memegang buku
+        PlayerInteraction pi = FindAnyObjectByType<PlayerInteraction>();
+        if (pi != null && pi.heldItem != null && pi.heldItem.CompareTag("Book"))
+        {
+            return "[E] Taruh Buku";
+        }
+        
+        return "Butuh Buku"; // Pesan jika pemain menyorot rak tanpa memegang buku
+    }
 
     public void Interact(GameObject player)
     {
-        // The actual placement is handled in PlayerInteraction.TryInteract()
-        // This is called right before PlaceHeldItemAt().
         if (IsFull) return;
 
-        _booksPlaced++;
-
-        // Notify the BookItem
-        // (PlayerInteraction passes the held object's root — look for BookItem there)
         if (player.TryGetComponent(out PlayerInteraction pi))
         {
-            // Access held item via reflection isn't ideal; use an event instead.
-            // For simplicity we find it via the holdPoint child.
-            Transform holdPoint = pi.holdPoint;
-            if (holdPoint.childCount > 0)
+            // Pastikan pemain benar-benar memegang buku sebelum memproses
+            if (pi.heldItem != null && pi.heldItem.CompareTag("Book"))
             {
-                GameObject heldObj = holdPoint.GetChild(0).gameObject;
-                if (heldObj.TryGetComponent(out BookItem book))
-                    book.OnShelved();
+                _booksPlaced++;
+
+                // Panggil fungsi OnShelved di buku (jika ada script BookItem)
+                if (pi.heldItem.TryGetComponent(out BookItem book))
+                {
+                    // Pastikan di dalam script BookItem kamu ada fungsi public void OnShelved()
+                    book.OnShelved(); 
+                }
+
+                Debug.Log($"Buku ditaruh di {name}! Total: {_booksPlaced}/{capacity}");
+                OnLookAway(); // Matikan highlight kuning setelah ditaruh
             }
         }
     }
 
     #endregion
 }
-

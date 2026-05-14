@@ -83,7 +83,7 @@ public class DeskMessy : MonoBehaviour, IInteractable
     public string GetPromptText()
     {
         if (_isTidy) return "";
-        PlayerInteraction pi = FindObjectOfType<PlayerInteraction>();
+        PlayerInteraction pi = FindAnyObjectByType<PlayerInteraction>();
         if (pi != null && pi.currentTool != ToolType.Tangan) return "Butuh Tangan Kosong (Tekan 1)";
         return "[E] Rapikan Meja";
     }
