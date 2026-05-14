@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - CinemachineTarget
+  - Book
+  - Trash
+  - Interactable
+  - Table
   layers:
   - Default
   - TransparentFX
@@ -12,9 +17,9 @@ TagManager:
   - Water
   - UI
   - Furniture
-  - 
-  - 
-  - 
+  - Items
+  - Floor
+  - Player
   - 
   - 
   - 

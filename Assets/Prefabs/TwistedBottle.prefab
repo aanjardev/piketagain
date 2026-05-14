@@ -68,6 +68,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TwistedBottle
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: db96f50f421a41644a004b803b0d232e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: db96f50f421a41644a004b803b0d232e, type: 3}
+      propertyPath: m_TagString
+      value: Trash
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -75,6 +83,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db96f50f421a41644a004b803b0d232e, type: 3}
       insertIndex: -1
       addedObject: {fileID: -4645763423238795736}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db96f50f421a41644a004b803b0d232e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6000264777587165305}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db96f50f421a41644a004b803b0d232e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4043461470107571631}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db96f50f421a41644a004b803b0d232e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3680707088907631762}
   m_SourcePrefab: {fileID: 100100000, guid: db96f50f421a41644a004b803b0d232e, type: 3}
 --- !u!1 &742108294129740898 stripped
 GameObject:
@@ -100,6 +117,64 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7759331768739107841, guid: db96f50f421a41644a004b803b0d232e, type: 3}
+--- !u!54 &6000264777587165305
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742108294129740898}
+  serializedVersion: 5
+  m_Mass: 0.1
+  m_LinearDamping: 0.5
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
+--- !u!114 &4043461470107571631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742108294129740898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f913b90c8079bd64d88a705309567c6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrashItem
+  binSound: {fileID: 0}
+--- !u!114 &-3680707088907631762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742108294129740898}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Outline
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
