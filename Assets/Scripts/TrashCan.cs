@@ -1,59 +1,48 @@
 using UnityEngine;
 
-// Tambahkan IInteractable agar tong sampah bisa disorot dan diklik pemain
 public class TrashCan : MonoBehaviour, IInteractable
 {
-    [Header("--- Visual ---")]
-    [Tooltip("Particle effect played when trash lands inside.")]
+    [Header("--- Visual & Animation ---")]
+    public Animator animator; 
     public ParticleSystem binParticles;
+    public AudioClip emptyBagSound;
 
-    private int _trashCount;
-    private Outline _outline; // Untuk efek menyala Quick Outline
+    private int _totalSampahDiTong;
+    private Outline _outline;
+    
+    // Status ini bisa dibaca oleh script pemain
+    public bool IsOpen { get; private set; } 
 
-    public int TrashCount => _trashCount;
-
-    // -----------------------------------------------------------------------
     void Awake()
     {
-        // Mencari komponen Outline otomatis
         _outline = GetComponent<Outline>();
         if (_outline != null) _outline.enabled = false;
     }
 
-    // -----------------------------------------------------------------------
-    #region IInteractable
+    public void OnLookAt() { if (_outline != null) _outline.enabled = true; }
+    public void OnLookAway() { if (_outline != null) _outline.enabled = false; }
 
-    public void OnLookAt()
-    {
-        // Nyalakan outline saat pemain melihat ke tong sampah
-        if (_outline != null) _outline.enabled = true;
-    }
-
-    public void OnLookAway()
-    {
-        // Matikan outline saat berpaling
-        if (_outline != null) _outline.enabled = false;
-    }
-
-    public string GetPromptText() => "[E] Buang Sampah";
+    public string GetPromptText() => IsOpen ? "[E] Tutup Tong" : "[E] Buka Tong";
 
     public void Interact(GameObject player)
     {
-        // Dikosongkan karena aksi membuangnya diatur oleh script PlayerInteraction
+        // Tombol E murni hanya untuk animasi buka/tutup tong
+        IsOpen = !IsOpen;
+
+        if (animator != null)
+        {
+            animator.SetBool("IsOpen", IsOpen);
+        }
     }
 
-    #endregion
-
-    // -----------------------------------------------------------------------
-    // Fungsi ini akan dipanggil oleh PlayerInteraction saat menekan [E]
-    public void ReceiveTrash(TrashItem trash)
+    // Fungsi ini dipanggil oleh PlayerInteraction saat selesai menahan [Q]
+    public void EmptyBagIntoCan(int amount)
     {
-        _trashCount++;
-        trash.OnDisposedInCan();
+        _totalSampahDiTong += amount;
+        
+        if (binParticles != null) binParticles.Play();
+        if (emptyBagSound != null) AudioSource.PlayClipAtPoint(emptyBagSound, transform.position);
 
-        if (binParticles != null)
-            binParticles.Play();
-            
-        Debug.Log($"Sampah berhasil dibuang! Total: {_trashCount}");
+        Debug.Log($"Berhasil membuang {amount} sampah! Total di tong: {_totalSampahDiTong}");
     }
 }

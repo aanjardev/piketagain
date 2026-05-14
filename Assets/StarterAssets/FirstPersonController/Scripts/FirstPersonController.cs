@@ -137,15 +137,15 @@ namespace StarterAssets
                 OpenPauseScreen();
             }
 
-            if (WinInputPressed())
-            {
-                OpenWinScreen();
-            }
+            // if (WinInputPressed())
+            // {
+            //     OpenWinScreen();
+            // }
 
-            if (LoseInputPressed())
-            {
-                OpenLoseScreen();
-            }
+            // if (LoseInputPressed())
+            // {
+            //     OpenLoseScreen();
+            // }
 
             if (IsPaused) return;
 

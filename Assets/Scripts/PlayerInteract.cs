@@ -1,13 +1,31 @@
 using UnityEngine;
+using TMPro;
 
 public class PlayerInteract : MonoBehaviour
 {
     public float interactDistance = 8f;
 
     public GameObject interactText;
+    public string promptMessage = "Tekan E";
+
+    private TextMeshProUGUI _promptText;
+
+    void Awake()
+    {
+        if (interactText != null)
+        {
+            _promptText = interactText.GetComponentInChildren<TextMeshProUGUI>();
+            if (_promptText != null)
+                _promptText.text = promptMessage;
+
+            interactText.SetActive(false);
+        }
+    }
 
     void Update()
     {
+        if (interactText == null) return;
+
         Ray ray = Camera.main.ViewportPointToRay(
             new Vector3(0.5f, 0.5f, 0)
         );

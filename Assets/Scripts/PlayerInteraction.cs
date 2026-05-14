@@ -1,41 +1,44 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro; // Tambahkan baris ini agar Unity kenal TextMeshPro
-/// <summary>
-/// Attach to the Player GameObject.
-/// Handles raycasting for interactable items (Books, Trash, Dust),
-/// shows a UI prompt, and delegates the action to the item's own script.
-/// </summary>
+using TMPro;
+
+// Daftar alat yang bisa dipakai pemain
+public enum ToolType { Tangan, KantongSampah, KainLap }
+
 [RequireComponent(typeof(CharacterController))]
 public class PlayerInteraction : MonoBehaviour
 {
     [Header("--- Interaction Settings ---")]
-    [Tooltip("How far the player can reach to interact.")]
     public float interactRange = 2.5f;
-    [Tooltip("Layers the interaction raycast can hit (Items + Furniture).")]
     public LayerMask interactableLayers;
-    [Tooltip("Key the player presses to interact.")]
     public KeyCode interactKey = KeyCode.E;
 
-    [Header("--- Held Item ---")]
-    [Tooltip("Empty child transform in front of the camera where held items sit.")]
-    public Transform holdPoint;
+    [Header("--- Tools & Inventory ---")]
+    public ToolType currentTool = ToolType.Tangan;
+    public int kapasitasKantong = 5;
+    public int isiKantongSaatIni = 0;
 
-    [Header("--- Throwing (Trash) ---")]
-    [Tooltip("Force applied when throwing a trash item.")]
-    public float throwForce = 6f;
+    [Header("--- Tool Visuals (Models) ---")]
+    [Tooltip("Model 3D Kantong Sampah (jadikan anak dari HoldPoint)")]
+    public GameObject kantongSampahModel;
+    [Tooltip("Model 3D Kain Lap (jadikan anak dari HoldPoint)")]
+    public GameObject kainLapModel;
+
+    [Header("--- Held Item (Khusus Buku) ---")]
+    public Transform holdPoint;
+    public float dropForce = 2f; // Mengganti throwForce karena buku tidak dilempar kencang
 
     [Header("--- UI ---")]
-    [Tooltip("The CanvasGroup wrapping the interaction prompt panel.")]
     public CanvasGroup promptPanel;
-    [Tooltip("Text element showing the action hint, e.g. '[E] Pick up Book'.")]
     public TextMeshProUGUI promptText;
 
+    [Header("--- Emptying Trash (Hold Q) ---")]
+    public float emptyHoldDuration = 2.0f; // Butuh hold 2 detik
+    private float _emptyProgress = 0f;
+    private bool _isEmptying = false;
     // Internal state
-    private IInteractable _targetInteractable; // item under the crosshair
-    private GameObject    _heldItem;           // currently held object
-    private IInteractable _heldInteractable;   // interface on held item
-
+    private IInteractable _targetInteractable;
+    private GameObject    _heldItem;
+    private IInteractable _heldInteractable;
     private Camera _cam;
 
     // -----------------------------------------------------------------------
@@ -43,19 +46,56 @@ public class PlayerInteraction : MonoBehaviour
     {
         _cam = Camera.main;
         HidePrompt();
+        UpdateToolVisuals(); // Pastikan tampilan alat benar saat game dimulai
     }
 
     // -----------------------------------------------------------------------
     void Update()
     {
+        HandleToolSwitching();
         ScanForInteractable();
 
         if (Input.GetKeyDown(interactKey))
             TryInteract();
+
+        // Mengecek apakah pemain sedang menahan tombol Q
+        HandleEmptyTrashLogic();
     }
 
     // -----------------------------------------------------------------------
-    /// <summary>Fires a ray from the camera centre; highlights whatever it hits.</summary>
+    #region TOOLS SYSTEM
+
+    void HandleToolSwitching()
+    {
+        // Cegah ganti alat kalau pemain masih memegang buku fisik
+        if (_heldItem != null) return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeTool(ToolType.Tangan);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeTool(ToolType.KantongSampah);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeTool(ToolType.KainLap);
+    }
+
+    void ChangeTool(ToolType newTool)
+    {
+        if (currentTool == newTool) return; // Abaikan jika alatnya sama
+        
+        currentTool = newTool;
+        UpdateToolVisuals();
+        Debug.Log("Ganti alat ke: " + currentTool);
+    }
+
+    void UpdateToolVisuals()
+    {
+        // Nyalakan/matikan 3D model sesuai dengan alat yang sedang aktif
+        if (kantongSampahModel != null) kantongSampahModel.SetActive(currentTool == ToolType.KantongSampah);
+        if (kainLapModel != null) kainLapModel.SetActive(currentTool == ToolType.KainLap);
+    }
+
+    #endregion
+
+    // -----------------------------------------------------------------------
+    #region INTERACTION LOGIC
+
     void ScanForInteractable()
     {
         Ray ray = new Ray(_cam.transform.position, _cam.transform.forward);
@@ -63,13 +103,34 @@ public class PlayerInteraction : MonoBehaviour
 
         if (hit && info.collider.TryGetComponent(out IInteractable interactable))
         {
-            // Same target — nothing to update
-            if (interactable == _targetInteractable) return;
+            if (interactable != _targetInteractable)
+            {
+                _targetInteractable?.OnLookAway();
+                _targetInteractable = interactable;
+                _targetInteractable.OnLookAt();
+            }
 
-            _targetInteractable?.OnLookAway();
-            _targetInteractable = interactable;
-            _targetInteractable.OnLookAt();
-            ShowPrompt(interactable.GetPromptText());
+            // Ambil teks dasar dari objek
+            string prompt = interactable.GetPromptText();
+
+            // Tambahkan UI khusus jika sedang pakai Kantong Sampah
+            if (currentTool == ToolType.KantongSampah)
+            {
+                if (interactable is TrashItem)
+                {
+                    prompt += $" ({isiKantongSaatIni}/{kapasitasKantong})";
+                }
+                else if (interactable is TrashCan tc && tc.IsOpen && isiKantongSaatIni > 0)
+                {
+                    // Jika tong terbuka dan ada sampah, munculkan opsi Q
+                    if (_isEmptying)
+                        prompt += $"\n[Q] Membuang... {Mathf.RoundToInt(_emptyProgress * 100)}%";
+                    else
+                        prompt += "\nTahan [Q] Buang Sampah";
+                }
+            }
+
+            ShowPrompt(prompt);
         }
         else
         {
@@ -79,71 +140,63 @@ public class PlayerInteraction : MonoBehaviour
                 _targetInteractable = null;
             }
 
-            // If we're holding something and not looking at a receptor, remind the player
+            _isEmptying = false;
+            _emptyProgress = 0f;
+
             if (_heldItem != null)
-                ShowPrompt($"[{interactKey}] Throw  |  Hold to aim");
+                ShowPrompt($"[{interactKey}] Jatuhkan Buku");
             else
                 HidePrompt();
         }
     }
-
-    // -----------------------------------------------------------------------
     void TryInteract()
     {
-        if (_heldItem != null && _heldItem.CompareTag("Trash"))
+        // 1. Kalau sedang memegang buku fisik
+        if (_heldItem != null)
         {
-            // Cek apakah pemain sedang melihat ke arah tong sampah
-            if (_targetInteractable is TrashCan trashCan)
+            if (_targetInteractable is BookshelfSlot)
             {
-                trashCan.ReceiveTrash(_heldItem.GetComponent<TrashItem>());
-                
-                // Kosongkan tangan pemain
-                _heldItem = null;
-                _heldInteractable = null;
+                _targetInteractable.Interact(gameObject);
+                PlaceHeldItemAt(_targetInteractable as MonoBehaviour);
             }
-            else 
+            else
             {
-                // Jika klik [E] tapi TIDAK melihat tong sampah, jatuhkan sampahnya ke lantai
-                ThrowHeldItem(); 
+                ThrowHeldItem(); // Jatuhkan buku ke lantai jika tidak lihat rak
             }
-            return;
-        }
-        
-        // --- If holding a Book and looking at a Bookshelf receptor ---
-        if (_heldItem != null && _heldItem.CompareTag("Book") && _targetInteractable is BookshelfSlot)
-        {
-            _targetInteractable.Interact(gameObject);
-            PlaceHeldItemAt(_targetInteractable as MonoBehaviour);
             return;
         }
 
-        // --- No target — nothing to do ---
+        // 2. Kalau tangan kosong atau pakai alat, tapi tidak ada target
         if (_targetInteractable == null) return;
 
-        // --- Delegate to the item ---
+        // 3. Panggil fungsi Interact milik barang yang ditatap (Buku/Sampah/Debu)
         _targetInteractable.Interact(gameObject);
 
-        // Pick up if the item requests it
-        if (_targetInteractable is IPickupable pickupable && pickupable.WantsPickup())
+        // 4. Khusus Buku: Ambil bukunya JIKA kita sedang pakai Tangan Kosong
+        if (currentTool == ToolType.Tangan && _targetInteractable is IPickupable pickupable && pickupable.WantsPickup())
+        {
             PickUp((pickupable as MonoBehaviour).gameObject);
+        }
     }
 
+    #endregion
+
     // -----------------------------------------------------------------------
+    #region ITEM HANDLING (Buku)
+
     void PickUp(GameObject item)
     {
-        if (_heldItem != null) return; // already holding something
+        if (_heldItem != null) return;
 
         _heldItem = item;
         _heldInteractable = item.GetComponent<IInteractable>();
 
-        // Disable physics while held
         if (item.TryGetComponent(out Rigidbody rb))
         {
             rb.isKinematic = true;
             rb.useGravity  = false;
         }
 
-        // Disable collider so it doesn't bump the player
         if (item.TryGetComponent(out Collider col))
             col.enabled = false;
 
@@ -152,7 +205,6 @@ public class PlayerInteraction : MonoBehaviour
         item.transform.localRotation = Quaternion.identity;
     }
 
-    // -----------------------------------------------------------------------
     void ThrowHeldItem()
     {
         if (_heldItem == null) return;
@@ -166,14 +218,14 @@ public class PlayerInteraction : MonoBehaviour
         {
             rb.isKinematic = false;
             rb.useGravity  = true;
-            rb.AddForce(_cam.transform.forward * throwForce, ForceMode.Impulse);
+            // Jatuhkan pelan ke depan
+            rb.AddForce(_cam.transform.forward * dropForce, ForceMode.Impulse);
         }
 
         _heldItem = null;
         _heldInteractable = null;
     }
 
-    // -----------------------------------------------------------------------
     void PlaceHeldItemAt(MonoBehaviour receptor)
     {
         if (_heldItem == null || receptor == null) return;
@@ -189,7 +241,47 @@ public class PlayerInteraction : MonoBehaviour
         _heldInteractable = null;
     }
 
+    void HandleEmptyTrashLogic()
+    {
+        // Syarat: Pakai kantong, isi > 0, lagi lihat TrashCan, dan TrashCan terbuka
+if (_targetInteractable is TrashCan tc && tc.IsOpen && currentTool == ToolType.KantongSampah && isiKantongSaatIni > 0)
+        {
+            if (Input.GetKey(KeyCode.Q))
+            {
+                _isEmptying = true;
+                _emptyProgress += Time.deltaTime / emptyHoldDuration; // Naikkan persentase
+
+                // Jika sudah ditahan selama 2 detik (100%)
+                if (_emptyProgress >= 1f)
+                {
+                    tc.EmptyBagIntoCan(isiKantongSaatIni);
+                    isiKantongSaatIni = 0; // Kosongkan kantong pemain
+                    _emptyProgress = 0f;
+                    _isEmptying = false;
+
+                    // --- TAMBAHAN BARU: Otomatis kembali ke Tangan Kosong ---
+                    ChangeTool(ToolType.Tangan);
+                }
+            }
+            else
+            {
+                // Jika tombol dilepas di tengah jalan, reset ke 0
+                _isEmptying = false;
+                _emptyProgress = 0f;
+            }
+        }
+        else
+        {
+            _isEmptying = false;
+            _emptyProgress = 0f;
+        }
+    }
+
+    #endregion
+
     // -----------------------------------------------------------------------
+    #region UI
+
     void ShowPrompt(string message)
     {
         if (promptPanel == null || promptText == null) return;
@@ -203,4 +295,6 @@ public class PlayerInteraction : MonoBehaviour
         if (promptPanel == null) return;
         promptPanel.alpha = 0f;
     }
+
+    #endregion
 }
