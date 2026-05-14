@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro; // Tambahkan baris ini agar Unity kenal TextMeshPro
 /// <summary>
 /// Attach to the Player GameObject.
 /// Handles raycasting for interactable items (Books, Trash, Dust),
@@ -29,7 +29,7 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("The CanvasGroup wrapping the interaction prompt panel.")]
     public CanvasGroup promptPanel;
     [Tooltip("Text element showing the action hint, e.g. '[E] Pick up Book'.")]
-    public Text promptText;
+    public TextMeshProUGUI promptText;
 
     // Internal state
     private IInteractable _targetInteractable; // item under the crosshair
