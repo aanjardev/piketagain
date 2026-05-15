@@ -82,11 +82,30 @@ public class DustItem : MonoBehaviour, IInteractable
     void UpdateDustAlpha()
     {
         if (dustRenderer == null) return;
-        Color c = dustRenderer.material.color;
+        
+        // Ambil warna saat ini dari URP Material
+        Color c = dustRenderer.material.GetColor("_BaseColor");
+        
+        // Ubah nilai Alpha-nya sesuai progress
         c.a = Mathf.Lerp(1f, 0f, _wipeProgress);
-        dustRenderer.material.color = c;
+        
+        // Terapkan kembali ke URP Material
+        dustRenderer.material.SetColor("_BaseColor", c);
     }
 
+    IEnumerator FadeAndDestroy()
+    {
+        float t = 0f;
+        while (t < 0.4f)
+        {
+            t += Time.deltaTime;
+            // Kita skip UpdateDustAlpha di sini agar tidak bentrok, 
+            // biarkan debu langsung hancur setelah animasi lap selesai.
+            yield return null;
+        }
+        Destroy(gameObject);
+    }    
+    
     void FinishWipe()
     {
         _isCleaned = true;
@@ -99,18 +118,6 @@ public class DustItem : MonoBehaviour, IInteractable
     //sampe sini
 
         StartCoroutine(FadeAndDestroy());
-    }
-
-    IEnumerator FadeAndDestroy()
-    {
-        float t = 0f;
-        while (t < 0.4f)
-        {
-            t += Time.deltaTime;
-            UpdateDustAlpha();
-            yield return null;
-        }
-        Destroy(gameObject);
     }
 
     void StartWipeAudio()

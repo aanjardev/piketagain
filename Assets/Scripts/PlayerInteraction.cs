@@ -24,6 +24,11 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("Model 3D Kain Lap (jadikan anak dari HoldPoint)")]
     public GameObject kainLapModel;
 
+    [Header("--- Tool Animation Settings ---")]
+    public float spinSpeed = 800f; // Seberapa cepat kemoceng muter
+    public float swaySpeed = 25f;  // Seberapa cepat getaran maju-mundurnya
+    public float swayAmount = 0.05f; // Jarak ayunan getaran
+
     [Header("--- Held Item (Khusus Buku) ---")]
     public Transform holdPoint;
     public float dropForce = 2f; // Mengganti throwForce karena buku tidak dilempar kencang
@@ -53,6 +58,8 @@ public class PlayerInteraction : MonoBehaviour
     private Camera _cam;
 
     public GameObject heldItem => _heldItem;
+    private Quaternion _kainLapStartRot;
+    private Vector3 _kainLapStartPos;
 
     // -----------------------------------------------------------------------
     void Awake()
@@ -222,7 +229,7 @@ public class PlayerInteraction : MonoBehaviour
     #endregion
 
     // -----------------------------------------------------------------------
-    #region ITEM HANDLING (Buku)
+    #region ITEM HANDLING & ANIMATION
 
     void PickUp(GameObject item)
     {
@@ -317,6 +324,30 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
+    void AnimateCleaningTool()
+    {
+        // Cek apakah pemain sedang pegang kemoceng dan modelnya tidak null
+        if (currentTool != ToolType.KainLap || kainLapModel == null) return;
+
+        // Jika pemain menekan atau menahan tombol E
+        if (Input.GetKey(interactKey))
+        {
+            // 1. Putar model kemoceng pada sumbu
+            kainLapModel.transform.Rotate(Vector3.forward, spinSpeed * Time.deltaTime, Space.Self);
+
+            // 2. PERBAIKAN: Efek getaran menggosok (Naik-Turun di sumbu Y, Maju-Mundur di sumbu Z)
+            float sway = Mathf.Sin(Time.time * swaySpeed) * swayAmount;
+            
+            // Sekarang posisi Y (tengah) dan Z (kanan) yang diisi angka sway, X dinolkan
+            kainLapModel.transform.localPosition = _kainLapStartPos + new Vector3(0, sway, sway);
+        }
+        else
+        {
+            // Jika tombol E dilepas, kembalikan posisi dan rotasi secara mulus ke posisi awal
+            kainLapModel.transform.localRotation = Quaternion.Lerp(kainLapModel.transform.localRotation, _kainLapStartRot, Time.deltaTime * 15f);
+            kainLapModel.transform.localPosition = Vector3.Lerp(kainLapModel.transform.localPosition, _kainLapStartPos, Time.deltaTime * 15f);
+        }
+    }
     #endregion
 
     // -----------------------------------------------------------------------
