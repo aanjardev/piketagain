@@ -29,7 +29,10 @@ public class DustItem : MonoBehaviour, IInteractable
             _audioSource = gameObject.AddComponent<AudioSource>();
             _audioSource.clip   = wipeSound;
             _audioSource.loop   = true;
-            _audioSource.volume = 0.6f;
+            _audioSource.volume = 1f;
+
+            var controller = _audioSource.gameObject.AddComponent<SfxVolumeController>();
+            controller.baseVolume = 0.6f;
         }
     }
 

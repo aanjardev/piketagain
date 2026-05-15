@@ -7305,11 +7305,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e1e9e080f7f86a40ac2f5eb93cf743c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RandomizeFurniture
-  maxPositionOffset: 0.5
-  maxRotationAngle: 28.4
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!54 &986953089
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7449,10 +7444,18 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 192
   interactKey: 101
+  currentTool: 0
+  kapasitasKantong: 5
+  isiKantongSaatIni: 0
+  kantongSampahModel: {fileID: 0}
+  kainLapModel: {fileID: 0}
   holdPoint: {fileID: 1999930059}
-  throwForce: 6
+  dropForce: 2
   promptPanel: {fileID: 124890519}
   promptText: {fileID: 2273333696013653032}
+  crosshair: {fileID: 0}
+  progressListPanel: {fileID: 1768359216}
+  emptyHoldDuration: 2
 --- !u!143 &1016817960
 CharacterController:
   m_ObjectHideFlags: 0
@@ -10196,9 +10199,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c3e40ef98e37e549a0dca138a61aa4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MessyChairPhysics
-  liftHeight: 0.5
-  tumbleForce: 15
-  settleTime: 2.5
 --- !u!1 &1332934963
 GameObject:
   m_ObjectHideFlags: 0
@@ -12164,6 +12164,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1647540925}
   - component: {fileID: 1647540924}
+  - component: {fileID: 1647540926}
   m_Layer: 0
   m_Name: bgm_main
   m_TagString: Untagged
@@ -12283,6 +12284,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1647540926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647540923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffe67468db796f14c8ef468d5248bddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BgmVolumeController
 --- !u!1 &1654704964
 GameObject:
   m_ObjectHideFlags: 0
@@ -13662,9 +13675,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c3e40ef98e37e549a0dca138a61aa4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MessyChairPhysics
-  liftHeight: 0.5
-  tumbleForce: 15
-  settleTime: 2.5
 --- !u!1 &1756586947 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7176157410714768559, guid: a1241b7378f2aa14c9dea416e0fcf51f, type: 3}
@@ -13847,6 +13857,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1768359215}
+  - component: {fileID: 1768359216}
   m_Layer: 5
   m_Name: ProgressList
   m_TagString: Untagged
@@ -13875,6 +13886,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 719.59, y: 406}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1768359216
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768359214}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1771528158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15494,7 +15517,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ab1b9e93f78e2546902dd51af14c721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrashCan
+  animator: {fileID: 0}
   binParticles: {fileID: 0}
+  emptyBagSound: {fileID: 0}
 --- !u!65 &2016158351
 BoxCollider:
   m_ObjectHideFlags: 0

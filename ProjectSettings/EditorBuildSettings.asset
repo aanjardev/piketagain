@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoseScreen.unity
     guid: 27715478962e7f24f8da3f487252be2a
+  - enabled: 1
+    path: Assets/Scenes/Classroom_shafwan.unity
+    guid: 873e77c42a33e7140bcf658ab760658d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

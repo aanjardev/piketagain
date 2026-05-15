@@ -48,7 +48,7 @@ public class TrashItem : MonoBehaviour, IInteractable
                 pi.isiKantongSaatIni++;
 
                 if (pickupSound != null)
-                    AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+                    SoundManager.Instance?.PlaySFXAtPoint(pickupSound, transform.position, 1f);
 
                 // Trash dihitung selesai saat masuk kantong
                 CleaningProgressManager.Instance?.ReportTrashComplete();
@@ -75,7 +75,7 @@ public class TrashItem : MonoBehaviour, IInteractable
         _isCleaned = true;
 
         if (binSound != null)
-            AudioSource.PlayClipAtPoint(binSound, transform.position);
+            SoundManager.Instance?.PlaySFXAtPoint(binSound, transform.position, 1f);
 
         Debug.Log($"{name} disposed.");
 

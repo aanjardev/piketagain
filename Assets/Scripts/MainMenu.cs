@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("clicked start game");
-        SceneManager.LoadSceneAsync("Classroom");
+        SceneManager.LoadSceneAsync("Classroom_shafwan");
 
     }
 
