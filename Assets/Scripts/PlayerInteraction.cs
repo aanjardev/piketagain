@@ -29,7 +29,6 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("--- UI ---")]
     public CanvasGroup promptPanel;
-    public TextMeshProUGUI promptText;
 
     [Header("--- Emptying Trash (Hold Q) ---")]
     public float emptyHoldDuration = 2.0f; // Butuh hold 2 detik

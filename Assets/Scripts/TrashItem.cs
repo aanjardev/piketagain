@@ -7,7 +7,11 @@ public class TrashItem : MonoBehaviour, IInteractable
     [Tooltip("Suara saat sampah dimasukkan ke kantong.")]
     public AudioClip pickupSound;
 
+    [Tooltip("Suara saat sampah masuk ke tong. Opsional.")]
+    public AudioClip binSound;
+
     private Outline _outline;
+    private bool _isCleaned = false;
 
     void Awake()
     {
@@ -15,14 +19,26 @@ public class TrashItem : MonoBehaviour, IInteractable
         if (_outline != null) _outline.enabled = false;
     }
 
-    public void OnLookAt() { if (_outline != null) _outline.enabled = true; }
-    public void OnLookAway() { if (_outline != null) _outline.enabled = false; }
+    public void OnLookAt()
+    {
+        if (_outline != null) _outline.enabled = true;
+    }
 
-    public string GetPromptText() => "[E] Masukkan ke Kantong";
+    public void OnLookAway()
+    {
+        if (_outline != null) _outline.enabled = false;
+    }
+
+    public string GetPromptText()
+    {
+        return "[E] Masukkan ke Kantong";
+    }
 
     public void Interact(GameObject player)
     {
         PlayerInteraction pi = player.GetComponent<PlayerInteraction>();
+
+        if (pi == null) return;
 
         // Cek apakah pemain sedang memakai Kantong Sampah
         if (pi.currentTool == ToolType.KantongSampah)
@@ -30,10 +46,13 @@ public class TrashItem : MonoBehaviour, IInteractable
             if (pi.isiKantongSaatIni < pi.kapasitasKantong)
             {
                 pi.isiKantongSaatIni++;
-                
+
                 if (pickupSound != null)
                     AudioSource.PlayClipAtPoint(pickupSound, transform.position);
-                    
+
+                // Trash dihitung selesai saat masuk kantong
+                CleaningProgressManager.Instance?.ReportTrashComplete();
+
                 Destroy(gameObject); // Hilangkan sampah
             }
             else
@@ -45,26 +64,21 @@ public class TrashItem : MonoBehaviour, IInteractable
         {
             Debug.Log("Butuh Kantong Sampah! (Tekan 2)");
         }
-
-        return false;
     }
 
-    #endregion
-
-    // -----------------------------------------------------------------------
-    /// <summary>
-    /// Called by TrashCan's trigger when this item enters it after being thrown.
-    /// </summary>
+    // Opsional: dipakai kalau suatu saat sampah bisa langsung masuk tong lewat trigger.
+    // Karena progress sudah dihitung saat masuk kantong, jangan ReportTrashComplete() di sini.
     public void OnDisposedInCan()
     {
         if (_isCleaned) return;
+
         _isCleaned = true;
 
         if (binSound != null)
             AudioSource.PlayClipAtPoint(binSound, transform.position);
 
         Debug.Log($"{name} disposed.");
-        CleaningProgressManager.Instance?.ReportTrashComplete();
-        Destroy(gameObject, 0.05f); // jeda sedikit agar suara sempat diputar sebelum objek hancur
+
+        Destroy(gameObject, 0.05f);
     }
 }
