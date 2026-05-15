@@ -78,5 +78,7 @@ public class BookItem : MonoBehaviour, IInteractable, IPickupable
         rb.isKinematic = true;
         rb.useGravity  = false;
         Debug.Log($"{name} shelved.");
+
+        CleaningProgressManager.Instance?.ReportBookComplete();
     }
 }

@@ -45,5 +45,26 @@ public class TrashItem : MonoBehaviour, IInteractable
         {
             Debug.Log("Butuh Kantong Sampah! (Tekan 2)");
         }
+
+        return false;
+    }
+
+    #endregion
+
+    // -----------------------------------------------------------------------
+    /// <summary>
+    /// Called by TrashCan's trigger when this item enters it after being thrown.
+    /// </summary>
+    public void OnDisposedInCan()
+    {
+        if (_isCleaned) return;
+        _isCleaned = true;
+
+        if (binSound != null)
+            AudioSource.PlayClipAtPoint(binSound, transform.position);
+
+        Debug.Log($"{name} disposed.");
+        CleaningProgressManager.Instance?.ReportTrashComplete();
+        Destroy(gameObject, 0.05f); // jeda sedikit agar suara sempat diputar sebelum objek hancur
     }
 }

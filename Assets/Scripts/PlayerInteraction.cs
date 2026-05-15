@@ -35,6 +35,11 @@ public class PlayerInteraction : MonoBehaviour
     public float emptyHoldDuration = 2.0f; // Butuh hold 2 detik
     private float _emptyProgress = 0f;
     private bool _isEmptying = false;
+    
+    [Tooltip("Text element showing the action hint, e.g. '[E] Pick up Book'.")]
+    public TextMeshProUGUI promptText;    
+    [Tooltip("The CanvasGroup for the Progress List UI that shows when Tab is held.")]
+    public CanvasGroup progressListPanel;
     // Internal state
     private IInteractable _targetInteractable;
     private GameObject    _heldItem;
@@ -59,8 +64,15 @@ public class PlayerInteraction : MonoBehaviour
         if (Input.GetKeyDown(interactKey))
             TryInteract();
 
-        // Mengecek apakah pemain sedang menahan tombol Q
+// Mengecek apakah pemain sedang menahan tombol Q
         HandleEmptyTrashLogic();
+
+        // Handle Tab key to show/hide ProgressList
+        if (Input.GetKeyDown(KeyCode.Tab))
+            ShowProgressList();
+        
+        if (Input.GetKeyUp(KeyCode.Tab))
+            HideProgressList();
     }
 
     // -----------------------------------------------------------------------
@@ -297,5 +309,20 @@ if (_targetInteractable is TrashCan tc && tc.IsOpen && currentTool == ToolType.K
         promptPanel.alpha = 0f;
     }
 
+    // -----------------------------------------------------------------------
+    void ShowProgressList()
+    {
+        if (progressListPanel == null) return;
+        progressListPanel.alpha = 1f;
+        progressListPanel.blocksRaycasts = true;
+    }
+
+    void HideProgressList()
+    {
+        if (progressListPanel == null) return;
+        progressListPanel.alpha = 0f;
+        progressListPanel.blocksRaycasts = false;
+    }
+    
     #endregion
 }

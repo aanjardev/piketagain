@@ -89,6 +89,12 @@ public class DustItem : MonoBehaviour, IInteractable
         _isCleaned = true;
         _isWiping  = false;
         StopWipeAudio();
+    //ada konflik disini
+        Debug.Log($"{name} wiped clean.");
+
+        CleaningProgressManager.Instance?.ReportDustComplete();
+    //sampe sini
+
         StartCoroutine(FadeAndDestroy());
     }
 
