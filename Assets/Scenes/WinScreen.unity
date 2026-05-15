@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01e73cf27e0becb4bb2b8ae6ae6cc49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WinMenu
-  gameplaySceneName: Gameplay
+  gameplaySceneName: Classroom
   mainMenuSceneName: HomeScreen
 --- !u!1 &124207314
 GameObject:

@@ -108,6 +108,8 @@ public class DustItem : MonoBehaviour, IInteractable
         StopWipeAudio();
         Debug.Log($"{name} wiped clean.");
 
+        CleaningProgressManager.Instance?.ReportDustComplete();
+
         // Fade out completely, then destroy
         StartCoroutine(FadeAndDestroy());
     }

@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HomeScreen.unity
     guid: bb156e7b4b4ac6344838b941ba0b29c5
+  - enabled: 1
+    path: Assets/Scenes/Classroom.unity
+    guid: 5d47bb65644109e4391c9f26ae766c3b
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05

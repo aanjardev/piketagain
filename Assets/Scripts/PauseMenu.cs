@@ -6,7 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("Scene Names")]
     public string pauseSceneName = "PauseScreen";
-    public string gameplaySceneName = "classroom";
+    public string gameplaySceneName = "Classroom";
     public string mainMenuSceneName = "HomeScreen";
 
     public void Resume()
@@ -22,7 +22,7 @@ public class PauseMenu : MonoBehaviour
     public void TryAgain()
     {
         FirstPersonController.SetPauseState(false);
-        SceneManager.LoadScene(gameplaySceneName, LoadSceneMode.Single);
+        SceneManager.LoadScene(gameplaySceneName);
     }
 
     public void LoadMainMenu()

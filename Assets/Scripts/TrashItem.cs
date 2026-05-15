@@ -85,6 +85,7 @@ public class TrashItem : MonoBehaviour, IInteractable, IPickupable
             AudioSource.PlayClipAtPoint(binSound, transform.position);
 
         Debug.Log($"{name} disposed.");
+        CleaningProgressManager.Instance?.ReportTrashComplete();
         Destroy(gameObject, 0.05f); // jeda sedikit agar suara sempat diputar sebelum objek hancur
     }
 }

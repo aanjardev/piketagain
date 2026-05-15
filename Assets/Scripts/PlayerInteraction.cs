@@ -29,8 +29,8 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("The CanvasGroup wrapping the interaction prompt panel.")]
     public CanvasGroup promptPanel;
     [Tooltip("Text element showing the action hint, e.g. '[E] Pick up Book'.")]
-    public TextMeshProUGUI promptText;
-
+    public TextMeshProUGUI promptText;    [Tooltip("The CanvasGroup for the Progress List UI that shows when Tab is held.")]
+    public CanvasGroup progressListPanel;
     // Internal state
     private IInteractable _targetInteractable; // item under the crosshair
     private GameObject    _heldItem;           // currently held object
@@ -52,6 +52,13 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Input.GetKeyDown(interactKey))
             TryInteract();
+
+        // Handle Tab key to show/hide ProgressList
+        if (Input.GetKeyDown(KeyCode.Tab))
+            ShowProgressList();
+        
+        if (Input.GetKeyUp(KeyCode.Tab))
+            HideProgressList();
     }
 
     // -----------------------------------------------------------------------
@@ -202,5 +209,20 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (promptPanel == null) return;
         promptPanel.alpha = 0f;
+    }
+
+    // -----------------------------------------------------------------------
+    void ShowProgressList()
+    {
+        if (progressListPanel == null) return;
+        progressListPanel.alpha = 1f;
+        progressListPanel.blocksRaycasts = true;
+    }
+
+    void HideProgressList()
+    {
+        if (progressListPanel == null) return;
+        progressListPanel.alpha = 0f;
+        progressListPanel.blocksRaycasts = false;
     }
 }
