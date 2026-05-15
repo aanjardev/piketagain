@@ -20,6 +20,7 @@ public class PlayerInteraction : MonoBehaviour
     [Header("--- Tool Visuals (Models) ---")]
     [Tooltip("Model 3D Kantong Sampah (jadikan anak dari HoldPoint)")]
     public GameObject kantongSampahModel;
+
     [Tooltip("Model 3D Kain Lap (jadikan anak dari HoldPoint)")]
     public GameObject kainLapModel;
 
@@ -28,30 +29,43 @@ public class PlayerInteraction : MonoBehaviour
     public float dropForce = 2f; // Mengganti throwForce karena buku tidak dilempar kencang
 
     [Header("--- UI ---")]
+    [Tooltip("Panel prompt interaksi. Jangan masukkan crosshair ke dalam panel ini.")]
     public CanvasGroup promptPanel;
+
+    [Tooltip("Text untuk prompt interaksi, contoh: '[E] Masukkan ke Kantong'.")]
+    public TextMeshProUGUI promptText;
+
+    [Tooltip("Crosshair/pointer yang harus selalu terlihat.")]
+    public GameObject crosshair;
+
+    [Tooltip("CanvasGroup untuk Progress List UI yang muncul saat Tab ditahan.")]
+    public CanvasGroup progressListPanel;
 
     [Header("--- Emptying Trash (Hold Q) ---")]
     public float emptyHoldDuration = 2.0f; // Butuh hold 2 detik
     private float _emptyProgress = 0f;
     private bool _isEmptying = false;
-    
-    [Tooltip("Text element showing the action hint, e.g. '[E] Pick up Book'.")]
-    public TextMeshProUGUI promptText;    
-    [Tooltip("The CanvasGroup for the Progress List UI that shows when Tab is held.")]
-    public CanvasGroup progressListPanel;
+
     // Internal state
     private IInteractable _targetInteractable;
-    private GameObject    _heldItem;
+    private GameObject _heldItem;
     private IInteractable _heldInteractable;
     private Camera _cam;
+
     public GameObject heldItem => _heldItem;
 
     // -----------------------------------------------------------------------
     void Awake()
     {
         _cam = Camera.main;
+
+        // Crosshair harus selalu aktif
+        if (crosshair != null)
+            crosshair.SetActive(true);
+
         HidePrompt();
-        UpdateToolVisuals(); // Pastikan tampilan alat benar saat game dimulai
+        HideProgressList();
+        UpdateToolVisuals();
     }
 
     // -----------------------------------------------------------------------
@@ -63,15 +77,19 @@ public class PlayerInteraction : MonoBehaviour
         if (Input.GetKeyDown(interactKey))
             TryInteract();
 
-// Mengecek apakah pemain sedang menahan tombol Q
+        // Mengecek apakah pemain sedang menahan tombol Q
         HandleEmptyTrashLogic();
 
         // Handle Tab key to show/hide ProgressList
         if (Input.GetKeyDown(KeyCode.Tab))
             ShowProgressList();
-        
+
         if (Input.GetKeyUp(KeyCode.Tab))
             HideProgressList();
+
+        // Jaga-jaga supaya crosshair tidak mati
+        if (crosshair != null && !crosshair.activeSelf)
+            crosshair.SetActive(true);
     }
 
     // -----------------------------------------------------------------------
@@ -89,8 +107,8 @@ public class PlayerInteraction : MonoBehaviour
 
     void ChangeTool(ToolType newTool)
     {
-        if (currentTool == newTool) return; // Abaikan jika alatnya sama
-        
+        if (currentTool == newTool) return;
+
         currentTool = newTool;
         UpdateToolVisuals();
         Debug.Log("Ganti alat ke: " + currentTool);
@@ -98,9 +116,11 @@ public class PlayerInteraction : MonoBehaviour
 
     void UpdateToolVisuals()
     {
-        // Nyalakan/matikan 3D model sesuai dengan alat yang sedang aktif
-        if (kantongSampahModel != null) kantongSampahModel.SetActive(currentTool == ToolType.KantongSampah);
-        if (kainLapModel != null) kainLapModel.SetActive(currentTool == ToolType.KainLap);
+        if (kantongSampahModel != null)
+            kantongSampahModel.SetActive(currentTool == ToolType.KantongSampah);
+
+        if (kainLapModel != null)
+            kainLapModel.SetActive(currentTool == ToolType.KainLap);
     }
 
     #endregion
@@ -110,6 +130,12 @@ public class PlayerInteraction : MonoBehaviour
 
     void ScanForInteractable()
     {
+        if (_cam == null)
+        {
+            _cam = Camera.main;
+            if (_cam == null) return;
+        }
+
         Ray ray = new Ray(_cam.transform.position, _cam.transform.forward);
         bool hit = Physics.Raycast(ray, out RaycastHit info, interactRange, interactableLayers);
 
@@ -122,10 +148,9 @@ public class PlayerInteraction : MonoBehaviour
                 _targetInteractable.OnLookAt();
             }
 
-            // Ambil teks dasar dari objek
             string prompt = interactable.GetPromptText();
 
-            // Tambahkan UI khusus jika sedang pakai Kantong Sampah
+            // UI tambahan kalau sedang pakai Kantong Sampah
             if (currentTool == ToolType.KantongSampah)
             {
                 if (interactable is TrashItem)
@@ -134,7 +159,6 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 else if (interactable is TrashCan tc && tc.IsOpen && isiKantongSaatIni > 0)
                 {
-                    // Jika tong terbuka dan ada sampah, munculkan opsi Q
                     if (_isEmptying)
                         prompt += $"\n[Q] Membuang... {Mathf.RoundToInt(_emptyProgress * 100)}%";
                     else
@@ -161,6 +185,7 @@ public class PlayerInteraction : MonoBehaviour
                 HidePrompt();
         }
     }
+
     void TryInteract()
     {
         // 1. Kalau sedang memegang buku fisik
@@ -173,19 +198,22 @@ public class PlayerInteraction : MonoBehaviour
             }
             else
             {
-                ThrowHeldItem(); // Jatuhkan buku ke lantai jika tidak lihat rak
+                ThrowHeldItem();
             }
+
             return;
         }
 
-        // 2. Kalau tangan kosong atau pakai alat, tapi tidak ada target
+        // 2. Kalau tidak ada target, tidak melakukan apa-apa
         if (_targetInteractable == null) return;
 
-        // 3. Panggil fungsi Interact milik barang yang ditatap (Buku/Sampah/Debu)
+        // 3. Jalankan interaksi object yang sedang dilihat
         _targetInteractable.Interact(gameObject);
 
-        // 4. Khusus Buku: Ambil bukunya JIKA kita sedang pakai Tangan Kosong
-        if (currentTool == ToolType.Tangan && _targetInteractable is IPickupable pickupable && pickupable.WantsPickup())
+        // 4. Khusus buku: ambil buku jika sedang pakai tangan kosong
+        if (currentTool == ToolType.Tangan &&
+            _targetInteractable is IPickupable pickupable &&
+            pickupable.WantsPickup())
         {
             PickUp((pickupable as MonoBehaviour).gameObject);
         }
@@ -206,7 +234,7 @@ public class PlayerInteraction : MonoBehaviour
         if (item.TryGetComponent(out Rigidbody rb))
         {
             rb.isKinematic = true;
-            rb.useGravity  = false;
+            rb.useGravity = false;
         }
 
         if (item.TryGetComponent(out Collider col))
@@ -229,8 +257,7 @@ public class PlayerInteraction : MonoBehaviour
         if (_heldItem.TryGetComponent(out Rigidbody rb))
         {
             rb.isKinematic = false;
-            rb.useGravity  = true;
-            // Jatuhkan pelan ke depan
+            rb.useGravity = true;
             rb.AddForce(_cam.transform.forward * dropForce, ForceMode.Impulse);
         }
 
@@ -255,29 +282,30 @@ public class PlayerInteraction : MonoBehaviour
 
     void HandleEmptyTrashLogic()
     {
-        // Syarat: Pakai kantong, isi > 0, lagi lihat TrashCan, dan TrashCan terbuka
-if (_targetInteractable is TrashCan tc && tc.IsOpen && currentTool == ToolType.KantongSampah && isiKantongSaatIni > 0)
+        // Syarat: pakai kantong, isi > 0, lihat TrashCan, dan TrashCan terbuka
+        if (_targetInteractable is TrashCan tc &&
+            tc.IsOpen &&
+            currentTool == ToolType.KantongSampah &&
+            isiKantongSaatIni > 0)
         {
             if (Input.GetKey(KeyCode.Q))
             {
                 _isEmptying = true;
-                _emptyProgress += Time.deltaTime / emptyHoldDuration; // Naikkan persentase
+                _emptyProgress += Time.deltaTime / emptyHoldDuration;
 
-                // Jika sudah ditahan selama 2 detik (100%)
                 if (_emptyProgress >= 1f)
                 {
                     tc.EmptyBagIntoCan(isiKantongSaatIni);
-                    isiKantongSaatIni = 0; // Kosongkan kantong pemain
+                    isiKantongSaatIni = 0;
                     _emptyProgress = 0f;
                     _isEmptying = false;
 
-                    // --- TAMBAHAN BARU: Otomatis kembali ke Tangan Kosong ---
+                    // Setelah buang sampah, otomatis balik ke tangan kosong
                     ChangeTool(ToolType.Tangan);
                 }
             }
             else
             {
-                // Jika tombol dilepas di tengah jalan, reset ke 0
                 _isEmptying = false;
                 _emptyProgress = 0f;
             }
@@ -297,31 +325,39 @@ if (_targetInteractable is TrashCan tc && tc.IsOpen && currentTool == ToolType.K
     void ShowPrompt(string message)
     {
         if (promptPanel == null || promptText == null) return;
-        promptText.text    = message;
-        promptPanel.alpha  = 1f;
+
+        promptText.text = message;
+        promptPanel.alpha = 1f;
         promptPanel.blocksRaycasts = false;
+        promptPanel.interactable = false;
     }
 
     void HidePrompt()
     {
         if (promptPanel == null) return;
+
         promptPanel.alpha = 0f;
+        promptPanel.blocksRaycasts = false;
+        promptPanel.interactable = false;
     }
 
-    // -----------------------------------------------------------------------
     void ShowProgressList()
     {
         if (progressListPanel == null) return;
+
         progressListPanel.alpha = 1f;
         progressListPanel.blocksRaycasts = true;
+        progressListPanel.interactable = true;
     }
 
     void HideProgressList()
     {
         if (progressListPanel == null) return;
+
         progressListPanel.alpha = 0f;
         progressListPanel.blocksRaycasts = false;
+        progressListPanel.interactable = false;
     }
-    
+
     #endregion
 }
