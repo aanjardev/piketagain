@@ -12,10 +12,7 @@ public class ClassroomSpawner : MonoBehaviour
     [Header("=== PREFABS ===")]
     public GameObject[] bookPrefabs;
     public GameObject[] trashPrefabs;
-    public GameObject dustPrefab;
-
-    [Header("=== TARGETS ===")]
-    public Transform[] dustSurfaces;
+    public GameObject[] dustPrefabs;
 
     [Header("=== TABLE SETTINGS ===")]
     public string tableTag = "Table";
@@ -191,9 +188,18 @@ public class ClassroomSpawner : MonoBehaviour
 
     void SpawnDust()
     {
-        if (dustPrefab == null || dustSurfaces.Length == 0)
+        if (dustPrefabs == null || dustPrefabs.Length == 0)
         {
-            Debug.LogWarning("[Spawner] Dust setup incomplete.");
+            Debug.LogWarning("[Spawner] Dust prefabs kosong.");
+            return;
+        }
+
+        // 1. OTOMATIS CARI SEMUA MEJA PAKAI TAG (Biar nggak usah manual)
+        GameObject[] tables = GameObject.FindGameObjectsWithTag(tableTag);
+
+        if (tables.Length == 0)
+        {
+            Debug.LogWarning($"[Spawner] Tidak ada meja dengan tag '{tableTag}' untuk debu.");
             return;
         }
 
@@ -204,12 +210,16 @@ public class ClassroomSpawner : MonoBehaviour
             if (spawned >= totalDustCount)
                 break;
 
-            Transform surface = GetRandom(dustSurfaces);
+            // Pilih meja acak
+            GameObject randomTable = GetRandom(tables);
+            Bounds bounds = GetBounds(randomTable);
 
-            Bounds bounds = GetBounds(surface.gameObject);
+            // Beri sedikit margin agar debu tidak *spawn* mengambang di luar tepi meja
+            float marginX = bounds.size.x * 0.1f;
+            float marginZ = bounds.size.z * 0.1f;
 
-            float x = Random.Range(bounds.min.x, bounds.max.x);
-            float z = Random.Range(bounds.min.z, bounds.max.z);
+            float x = Random.Range(bounds.min.x + marginX, bounds.max.x - marginX);
+            float z = Random.Range(bounds.min.z + marginZ, bounds.max.z - marginZ);
 
             Vector3 pos = new(
                 x,
@@ -220,26 +230,36 @@ public class ClassroomSpawner : MonoBehaviour
             if (!IsPositionFree(pos))
                 continue;
 
+            // 2. LOGIKA ROTASI: Menempel rata di meja + Putaran acak
             Quaternion rot = Quaternion.identity;
-
+            
+            // Tembak raycast ke bawah untuk mendeteksi permukaan kayu meja
             if (Physics.Raycast(pos + Vector3.up * 0.1f, Vector3.down, out RaycastHit hit, 1f))
             {
+                // Bikin debunya mengikuti kemiringan permukaan meja
                 rot = Quaternion.FromToRotation(Vector3.up, hit.normal);
             }
 
-            rot *= Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            // --- BAGIAN INI YANG DIUBAH ---
+            // Ubah sumbu X menjadi 90f agar Quad tiduran, sumbu Y tetap acak (0-360)
+            rot *= Quaternion.Euler(90f, Random.Range(0f, 360f), 0f);
+            // ------------------------------
 
-            GameObject dust = Instantiate(dustPrefab, pos, rot);
-
+            // Spawn Debu
+            GameObject prefabAcak = GetRandom(dustPrefabs);
+            GameObject dust = Instantiate(prefabAcak, pos, rot);
             dust.tag = "Dust";
+
+            // 3. LOGIKA SKALA: Bikin ukuran debunya beda-beda (0.5x sampai 1.5x dari ukuran asli)
+            float randomScale = Random.Range(0.5f, 1.5f);
+            dust.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
 
             occupiedPositions.Add(pos);
             spawned++;
         }
 
-        Debug.Log($"[Spawner] Spawned {spawned}/{totalDustCount} dust.");
+        Debug.Log($"[Spawner] Berhasil menaruh {spawned}/{totalDustCount} debu di atas meja.");
     }
-
     #endregion
 
     // =========================================================
