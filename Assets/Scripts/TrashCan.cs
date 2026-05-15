@@ -41,7 +41,7 @@ public class TrashCan : MonoBehaviour, IInteractable
         _totalSampahDiTong += amount;
         
         if (binParticles != null) binParticles.Play();
-        if (emptyBagSound != null) AudioSource.PlayClipAtPoint(emptyBagSound, transform.position);
+        if (emptyBagSound != null) SoundManager.Instance?.PlaySFXAtPoint(emptyBagSound, transform.position, 1f);
 
         Debug.Log($"Berhasil membuang {amount} sampah! Total di tong: {_totalSampahDiTong}");
     }

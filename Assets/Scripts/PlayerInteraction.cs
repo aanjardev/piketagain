@@ -160,7 +160,7 @@ public class PlayerInteraction : MonoBehaviour
                 else if (interactable is TrashCan tc && tc.IsOpen && isiKantongSaatIni > 0)
                 {
                     if (_isEmptying)
-                        prompt += $"\n[Q] Membuang... {Mathf.RoundToInt(_emptyProgress * 100)}%";
+                        prompt += $"\n[Q] Membuang... {Mathf.RoundToInt(_emptyProgress * 300)}%";
                     else
                         prompt += "\nTahan [Q] Buang Sampah";
                 }
