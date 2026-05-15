@@ -85,7 +85,7 @@ public class FurnitureTidy : MonoBehaviour, IInteractable
         OnLookAway(); // Matikan highlight kuning
 
         if (slideSound != null)
-            AudioSource.PlayClipAtPoint(slideSound, transform.position);
+            SoundManager.Instance?.PlaySFXAtPoint(slideSound, transform.position, 1f);
 
         Vector3 startPos = transform.position;
         Quaternion startRot = transform.rotation;

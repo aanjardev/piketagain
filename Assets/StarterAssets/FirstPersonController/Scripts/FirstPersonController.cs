@@ -274,9 +274,10 @@ namespace StarterAssets
             if (_input.look.sqrMagnitude >= _threshold)
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+                float sensitivity = SoundManager.Instance != null ? SoundManager.Instance.Sensitivity : 1f;
 
-                _cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
-                _rotationVelocity = _input.look.x * RotationSpeed * deltaTimeMultiplier;
+                _cinemachineTargetPitch += _input.look.y * RotationSpeed * sensitivity * deltaTimeMultiplier;
+                _rotationVelocity = _input.look.x * RotationSpeed * sensitivity * deltaTimeMultiplier;
 
                 _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
