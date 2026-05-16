@@ -10,6 +10,19 @@ public class CleaningProgressManager : MonoBehaviour
 {
     public static CleaningProgressManager Instance { get; private set; }
 
+    // Read-only accessors for other systems/UI
+    public int TotalBooks => _totalBooks;
+    public int TotalTrash => _totalTrash;
+    public int TotalDust => _totalDust;
+    public int TotalDesks => _totalDesks;
+    public int TotalChairs => _totalChairs;
+
+    public int CompletedBooks => _completedBooks;
+    public int CompletedTrash => _completedTrash;
+    public int CompletedDust => _completedDust;
+    public int CompletedDesks => _completedDesks;
+    public int CompletedChairs => _completedChairs;
+
     [Header("--- UI ---")]
     public Slider progressBar;
 
@@ -18,6 +31,8 @@ public class CleaningProgressManager : MonoBehaviour
     public TMP_Text bookLabel;
     public TMP_Text trashLabel;
     public TMP_Text dustLabel;
+    public TMP_Text deskLabel;
+    public TMP_Text chairLabel;
 
     public GameObject winPanel;
 
@@ -25,11 +40,15 @@ public class CleaningProgressManager : MonoBehaviour
     private int _totalBooks;
     private int _totalTrash;
     private int _totalDust;
+    private int _totalDesks;
+    private int _totalChairs;
     private int _totalTasks;
 
     private int _completedBooks;
     private int _completedTrash;
     private int _completedDust;
+    private int _completedDesks;
+    private int _completedChairs;
     private int _completedTasks;
 
     // -----------------------------------------------------------------------
@@ -50,12 +69,16 @@ public class CleaningProgressManager : MonoBehaviour
         _totalBooks = FindObjectsByType<BookItem>(FindObjectsSortMode.None).Length;
         _totalTrash = FindObjectsByType<TrashItem>(FindObjectsSortMode.None).Length;
         _totalDust  = FindObjectsByType<DustItem>(FindObjectsSortMode.None).Length;
+        _totalDesks = FindObjectsByType<DeskMessy>(FindObjectsSortMode.None).Length;
+        _totalChairs = FindObjectsByType<ChairMessy>(FindObjectsSortMode.None).Length;
 
-        _totalTasks = _totalBooks + _totalTrash + _totalDust;
+        _totalTasks = _totalBooks + _totalTrash + _totalDust + _totalDesks + _totalChairs;
 
         _completedBooks = 0;
         _completedTrash = 0;
         _completedDust  = 0;
+        _completedDesks = 0;
+        _completedChairs = 0;
         _completedTasks = 0;
 
         if (winPanel != null)
@@ -66,7 +89,7 @@ public class CleaningProgressManager : MonoBehaviour
         RefreshUI();
 
         Debug.Log($"CleaningProgressManager: {_totalTasks} tasks to complete. " +
-                  $"Books={_totalBooks}, Trash={_totalTrash}, Dust={_totalDust}");
+                  $"Books={_totalBooks}, Trash={_totalTrash}, Dust={_totalDust}, Desks={_totalDesks}, Chairs={_totalChairs}");
     }
 
     // -----------------------------------------------------------------------
@@ -88,6 +111,18 @@ public class CleaningProgressManager : MonoBehaviour
     public void ReportDustComplete()
     {
         _completedDust = Mathf.Min(_completedDust + 1, _totalDust);
+        ReportTaskComplete();
+    }
+
+    public void ReportDeskComplete()
+    {
+        _completedDesks = Mathf.Min(_completedDesks + 1, _totalDesks);
+        ReportTaskComplete();
+    }
+
+    public void ReportChairComplete()
+    {
+        _completedChairs = Mathf.Min(_completedChairs + 1, _totalChairs);
         ReportTaskComplete();
     }
 
@@ -131,6 +166,16 @@ public class CleaningProgressManager : MonoBehaviour
         if (dustLabel != null)
         {
             dustLabel.text = $"Dust: {_completedDust}/{_totalDust}";
+        }
+
+        if (deskLabel != null)
+        {
+            deskLabel.text = $"Desks: {_completedDesks}/{_totalDesks}";
+        }
+
+        if (chairLabel != null)
+        {
+            chairLabel.text = $"Chairs: {_completedChairs}/{_totalChairs}";
         }
     }
 

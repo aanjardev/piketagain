@@ -95,5 +95,7 @@ public class ChairMessy : MonoBehaviour, IInteractable
         transform.rotation = _originalRotation;
         _isTidy = true;
         _isMoving = false;
+        // Laporkan ke manager progress
+        CleaningProgressManager.Instance?.ReportChairComplete();
     }
 }
