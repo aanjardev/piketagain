@@ -19,6 +19,8 @@ public class DeskMessy : MonoBehaviour, IInteractable
     private bool _isMoving = false;
     private Outline _outline;
 
+    public bool IsMessy => !_isTidy;
+
     void Awake()
     {
         _originalPosition = transform.position;
@@ -116,5 +118,7 @@ public class DeskMessy : MonoBehaviour, IInteractable
         transform.rotation = _originalRotation;
         _isTidy = true;
         _isMoving = false;
+        // Laporkan ke manager progress
+        CleaningProgressManager.Instance?.ReportDeskComplete();
     }
 }
