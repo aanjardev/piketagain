@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -64,13 +65,37 @@ public class CleaningProgressManager : MonoBehaviour
     }
 
     // -----------------------------------------------------------------------
-    void Start()
+    IEnumerator Start()
     {
-        _totalBooks = FindObjectsByType<BookItem>(FindObjectsSortMode.None).Length;
-        _totalTrash = FindObjectsByType<TrashItem>(FindObjectsSortMode.None).Length;
-        _totalDust  = FindObjectsByType<DustItem>(FindObjectsSortMode.None).Length;
-        _totalDesks = FindObjectsByType<DeskMessy>(FindObjectsSortMode.None).Length;
-        _totalChairs = FindObjectsByType<ChairMessy>(FindObjectsSortMode.None).Length;
+        // Wait until all spawners/Start() methods have run.
+        yield return new WaitForEndOfFrame();
+
+        BookItem[] books = FindObjectsByType<BookItem>(FindObjectsSortMode.None);
+        _totalBooks = 0;
+        foreach (var book in books)
+        {
+            if (!book.IsShelved)
+                _totalBooks++;
+        }
+
+        _totalTrash = CountItemsWithFallback<TrashItem>("Trash");
+        _totalDust  = CountItemsWithFallback<DustItem>("Dust");
+
+        DeskMessy[] desks = FindObjectsByType<DeskMessy>(FindObjectsSortMode.None);
+        _totalDesks = 0;
+        foreach (var desk in desks)
+        {
+            if (desk.IsMessy)
+                _totalDesks++;
+        }
+
+        ChairMessy[] chairs = FindObjectsByType<ChairMessy>(FindObjectsSortMode.None);
+        _totalChairs = 0;
+        foreach (var chair in chairs)
+        {
+            if (chair.IsMessy)
+                _totalChairs++;
+        }
 
         _totalTasks = _totalBooks + _totalTrash + _totalDust + _totalDesks + _totalChairs;
 
@@ -190,5 +215,31 @@ public class CleaningProgressManager : MonoBehaviour
         }
 
         Time.timeScale = 0f;
+    }
+
+    int CountItemsWithFallback<T>(string fallbackTag) where T : MonoBehaviour
+    {
+        T[] items = FindObjectsByType<T>(FindObjectsSortMode.None);
+        if (items.Length == 0)
+        {
+            items = GameObject.FindObjectsOfType<T>();
+            if (items.Length > 0 && !string.IsNullOrEmpty(fallbackTag))
+                Debug.Log($"[CleaningProgressManager] Found {items.Length} {typeof(T).Name} via FindObjectsOfType fallback.");
+        }
+
+        if (items.Length > 0)
+            return items.Length;
+
+        if (!string.IsNullOrEmpty(fallbackTag))
+        {
+            GameObject[] tagged = GameObject.FindGameObjectsWithTag(fallbackTag);
+            if (tagged.Length > 0)
+            {
+                Debug.Log($"[CleaningProgressManager] Found {tagged.Length} objects tagged '{fallbackTag}' as fallback.");
+                return tagged.Length;
+            }
+        }
+
+        return 0;
     }
 }

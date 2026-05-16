@@ -19,6 +19,13 @@ public class ProgressListController : MonoBehaviour
     public TMP_Text task4; // Rapikan buku
     public TMP_Text task5; // Bersihkan noda
 
+    [Header("--- Task Checkmarks ---")]
+    public GameObject task1Check;
+    public GameObject task2Check;
+    public GameObject task3Check;
+    public GameObject task4Check;
+    public GameObject task5Check;
+
     [Header("--- Slide Settings ---")]
     [Tooltip("Local Y offset applied when collapsed. Use negative value to move panel down off-screen leaving a small peek.")]
     public float collapsedOffsetY = -180f;
@@ -64,6 +71,13 @@ public class ProgressListController : MonoBehaviour
             panelGroup.blocksRaycasts = false;
             panelGroup.interactable = false;
         }
+
+        // hide all checklist icons at startup
+        if (task1Check != null) task1Check.SetActive(false);
+        if (task2Check != null) task2Check.SetActive(false);
+        if (task3Check != null) task3Check.SetActive(false);
+        if (task4Check != null) task4Check.SetActive(false);
+        if (task5Check != null) task5Check.SetActive(false);
 
         // initialize tooltip
         if (tooltipText != null) tooltipText.text = "Press 'tab' to open";
@@ -147,19 +161,35 @@ public class ProgressListController : MonoBehaviour
         var mgr = CleaningProgressManager.Instance;
         if (mgr == null) return;
 
+        bool deskDone = mgr.TotalDesks > 0 && mgr.CompletedDesks >= mgr.TotalDesks;
+        bool chairDone = mgr.TotalChairs > 0 && mgr.CompletedChairs >= mgr.TotalChairs;
+        bool trashDone = mgr.TotalTrash > 0 && mgr.CompletedTrash >= mgr.TotalTrash;
+        bool bookDone = mgr.TotalBooks > 0 && mgr.CompletedBooks >= mgr.TotalBooks;
+        bool dustDone = mgr.TotalDust > 0 && mgr.CompletedDust >= mgr.TotalDust;
+
         if (task1 != null)
             task1.text = $"Rapikan meja ({mgr.CompletedDesks}/{mgr.TotalDesks})";
+        if (task1Check != null)
+            task1Check.SetActive(deskDone);
 
         if (task2 != null)
             task2.text = $"Rapikan kursi ({mgr.CompletedChairs}/{mgr.TotalChairs})";
+        if (task2Check != null)
+            task2Check.SetActive(chairDone);
 
         if (task3 != null)
             task3.text = $"Buang sampah ({mgr.CompletedTrash}/{mgr.TotalTrash})";
+        if (task3Check != null)
+            task3Check.SetActive(trashDone);
 
         if (task4 != null)
             task4.text = $"Rapikan buku ({mgr.CompletedBooks}/{mgr.TotalBooks})";
+        if (task4Check != null)
+            task4Check.SetActive(bookDone);
 
         if (task5 != null)
             task5.text = $"Bersihkan noda ({mgr.CompletedDust}/{mgr.TotalDust})";
+        if (task5Check != null)
+            task5Check.SetActive(dustDone);
     }
 }

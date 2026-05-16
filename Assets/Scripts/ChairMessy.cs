@@ -19,6 +19,8 @@ public class ChairMessy : MonoBehaviour, IInteractable
     private bool _isMoving = false;
     private Outline _outline;
 
+    public bool IsMessy => !_isTidy;
+
     void Awake()
     {
         _originalPosition = transform.position;
