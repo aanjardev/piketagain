@@ -11,6 +11,9 @@ public class BookItem : MonoBehaviour, IInteractable, IPickupable
     private Outline _outline; // Referensi untuk Quick Outline
     private bool    _wantsPickup;
     private bool    _isPickedUp;
+    private bool    _isShelved;
+
+    public bool IsShelved => _isShelved;
 
     // -----------------------------------------------------------------------
     void Awake()
@@ -74,6 +77,7 @@ public class BookItem : MonoBehaviour, IInteractable, IPickupable
     public void OnShelved()
     {
         _isPickedUp = false;
+        _isShelved = true;
         var rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
         rb.useGravity  = false;

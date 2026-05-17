@@ -46,6 +46,11 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("CanvasGroup untuk Progress List UI yang muncul saat Tab ditahan.")]
     public CanvasGroup progressListPanel;
 
+    [Tooltip("Controller untuk ProgressList agar Toggle di Tab bisa dipanggil langsung.")]
+    public ProgressListController progressListController;
+    private ProgressListController _progressListController;
+    public bool logProgressListToggle = false;
+
     [Header("--- Emptying Trash (Hold Q) ---")]
     public float emptyHoldDuration = 2.0f; // Butuh hold 2 detik
     private float _emptyProgress = 0f;
@@ -60,6 +65,7 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject heldItem => _heldItem;
     private Quaternion _kainLapStartRot;
     private Vector3 _kainLapStartPos;
+    private bool _progressListOpen = false;
 
     // -----------------------------------------------------------------------
     void Awake()
@@ -71,8 +77,27 @@ public class PlayerInteraction : MonoBehaviour
             crosshair.SetActive(true);
 
         HidePrompt();
-        HideProgressList();
+        // Keep progress list visible (we'll slide it for collapsed state). Ensure CanvasGroup alpha = 1
+        if (progressListPanel != null)
+        {
+            progressListPanel.alpha = 1f;
+            progressListPanel.blocksRaycasts = false;
+            progressListPanel.interactable = false;
+        }
+
+        _progressListController = progressListController != null
+            ? progressListController
+            : FindAnyObjectByType<ProgressListController>();
+
+        if (logProgressListToggle)
+            Debug.Log($"[PlayerInteraction] ProgressListController found={_progressListController != null}");
+
         UpdateToolVisuals();
+    }
+
+    void Start()
+    {
+        _progressListController?.SetOpen(false);
     }
 
     // -----------------------------------------------------------------------
@@ -87,12 +112,16 @@ public class PlayerInteraction : MonoBehaviour
         // Mengecek apakah pemain sedang menahan tombol Q
         HandleEmptyTrashLogic();
 
-        // Handle Tab key to show/hide ProgressList
+        // Handle Tab key to toggle ProgressList open/close
         if (Input.GetKeyDown(KeyCode.Tab))
-            ShowProgressList();
+        {
+            _progressListOpen = !_progressListOpen;
+            if (logProgressListToggle)
+                Debug.Log($"[PlayerInteraction] Tab pressed, open={_progressListOpen}, controllerExists={_progressListController != null}");
 
-        if (Input.GetKeyUp(KeyCode.Tab))
-            HideProgressList();
+            // Let the ProgressListController slide and enable interaction.
+            _progressListController?.SetOpen(_progressListOpen);
+        }
 
         // Jaga-jaga supaya crosshair tidak mati
         if (crosshair != null && !crosshair.activeSelf)

@@ -8,13 +8,6 @@ public class PauseMenu : MonoBehaviour
     public string pauseSceneName = "PauseScreen";
     public string gameplaySceneName = "Classroom";
     public string mainMenuSceneName = "HomeScreen";
-    public GameObject settingsPanel;
-
-     private void Start()
-    {
-        if (settingsPanel != null)
-            settingsPanel.SetActive(false);
-    }
 
     public void Resume()
     {
@@ -41,19 +34,6 @@ public class PauseMenu : MonoBehaviour
 
         SceneManager.LoadScene(mainMenuSceneName, LoadSceneMode.Single);
     }
-
-    public void OpenSettings()
-    {
-        settingsPanel.SetActive(true);
-        FirstPersonController.SetPauseState(true);
-    }
-
-    public void CloseSettings()
-    {
-        settingsPanel.SetActive(false);
-        FirstPersonController.SetPauseState(true); // Tetap pause di pause menu
-    }
-
 
     public void QuitGame()
     {

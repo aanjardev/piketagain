@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -10,6 +11,19 @@ public class CleaningProgressManager : MonoBehaviour
 {
     public static CleaningProgressManager Instance { get; private set; }
 
+    // Read-only accessors for other systems/UI
+    public int TotalBooks => _totalBooks;
+    public int TotalTrash => _totalTrash;
+    public int TotalDust => _totalDust;
+    public int TotalDesks => _totalDesks;
+    public int TotalChairs => _totalChairs;
+
+    public int CompletedBooks => _completedBooks;
+    public int CompletedTrash => _completedTrash;
+    public int CompletedDust => _completedDust;
+    public int CompletedDesks => _completedDesks;
+    public int CompletedChairs => _completedChairs;
+
     [Header("--- UI ---")]
     public Slider progressBar;
 
@@ -18,6 +32,8 @@ public class CleaningProgressManager : MonoBehaviour
     public TMP_Text bookLabel;
     public TMP_Text trashLabel;
     public TMP_Text dustLabel;
+    public TMP_Text deskLabel;
+    public TMP_Text chairLabel;
 
     public GameObject winPanel;
 
@@ -25,11 +41,15 @@ public class CleaningProgressManager : MonoBehaviour
     private int _totalBooks;
     private int _totalTrash;
     private int _totalDust;
+    private int _totalDesks;
+    private int _totalChairs;
     private int _totalTasks;
 
     private int _completedBooks;
     private int _completedTrash;
     private int _completedDust;
+    private int _completedDesks;
+    private int _completedChairs;
     private int _completedTasks;
 
     // -----------------------------------------------------------------------
@@ -45,17 +65,45 @@ public class CleaningProgressManager : MonoBehaviour
     }
 
     // -----------------------------------------------------------------------
-    void Start()
+    IEnumerator Start()
     {
-        _totalBooks = FindObjectsByType<BookItem>(FindObjectsSortMode.None).Length;
-        _totalTrash = FindObjectsByType<TrashItem>(FindObjectsSortMode.None).Length;
-        _totalDust  = FindObjectsByType<DustItem>(FindObjectsSortMode.None).Length;
+        // Wait until all spawners/Start() methods have run.
+        yield return new WaitForEndOfFrame();
 
-        _totalTasks = _totalBooks + _totalTrash + _totalDust;
+        BookItem[] books = FindObjectsByType<BookItem>(FindObjectsSortMode.None);
+        _totalBooks = 0;
+        foreach (var book in books)
+        {
+            if (!book.IsShelved)
+                _totalBooks++;
+        }
+
+        _totalTrash = CountItemsWithFallback<TrashItem>("Trash");
+        _totalDust  = CountItemsWithFallback<DustItem>("Dust");
+
+        DeskMessy[] desks = FindObjectsByType<DeskMessy>(FindObjectsSortMode.None);
+        _totalDesks = 0;
+        foreach (var desk in desks)
+        {
+            if (desk.IsMessy)
+                _totalDesks++;
+        }
+
+        ChairMessy[] chairs = FindObjectsByType<ChairMessy>(FindObjectsSortMode.None);
+        _totalChairs = 0;
+        foreach (var chair in chairs)
+        {
+            if (chair.IsMessy)
+                _totalChairs++;
+        }
+
+        _totalTasks = _totalBooks + _totalTrash + _totalDust + _totalDesks + _totalChairs;
 
         _completedBooks = 0;
         _completedTrash = 0;
         _completedDust  = 0;
+        _completedDesks = 0;
+        _completedChairs = 0;
         _completedTasks = 0;
 
         if (winPanel != null)
@@ -66,7 +114,7 @@ public class CleaningProgressManager : MonoBehaviour
         RefreshUI();
 
         Debug.Log($"CleaningProgressManager: {_totalTasks} tasks to complete. " +
-                  $"Books={_totalBooks}, Trash={_totalTrash}, Dust={_totalDust}");
+                  $"Books={_totalBooks}, Trash={_totalTrash}, Dust={_totalDust}, Desks={_totalDesks}, Chairs={_totalChairs}");
     }
 
     // -----------------------------------------------------------------------
@@ -88,6 +136,18 @@ public class CleaningProgressManager : MonoBehaviour
     public void ReportDustComplete()
     {
         _completedDust = Mathf.Min(_completedDust + 1, _totalDust);
+        ReportTaskComplete();
+    }
+
+    public void ReportDeskComplete()
+    {
+        _completedDesks = Mathf.Min(_completedDesks + 1, _totalDesks);
+        ReportTaskComplete();
+    }
+
+    public void ReportChairComplete()
+    {
+        _completedChairs = Mathf.Min(_completedChairs + 1, _totalChairs);
         ReportTaskComplete();
     }
 
@@ -132,6 +192,16 @@ public class CleaningProgressManager : MonoBehaviour
         {
             dustLabel.text = $"Dust: {_completedDust}/{_totalDust}";
         }
+
+        if (deskLabel != null)
+        {
+            deskLabel.text = $"Desks: {_completedDesks}/{_totalDesks}";
+        }
+
+        if (chairLabel != null)
+        {
+            chairLabel.text = $"Chairs: {_completedChairs}/{_totalChairs}";
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -145,5 +215,31 @@ public class CleaningProgressManager : MonoBehaviour
         }
 
         Time.timeScale = 0f;
+    }
+
+    int CountItemsWithFallback<T>(string fallbackTag) where T : MonoBehaviour
+    {
+        T[] items = FindObjectsByType<T>(FindObjectsSortMode.None);
+        if (items.Length == 0)
+        {
+            items = GameObject.FindObjectsOfType<T>();
+            if (items.Length > 0 && !string.IsNullOrEmpty(fallbackTag))
+                Debug.Log($"[CleaningProgressManager] Found {items.Length} {typeof(T).Name} via FindObjectsOfType fallback.");
+        }
+
+        if (items.Length > 0)
+            return items.Length;
+
+        if (!string.IsNullOrEmpty(fallbackTag))
+        {
+            GameObject[] tagged = GameObject.FindGameObjectsWithTag(fallbackTag);
+            if (tagged.Length > 0)
+            {
+                Debug.Log($"[CleaningProgressManager] Found {tagged.Length} objects tagged '{fallbackTag}' as fallback.");
+                return tagged.Length;
+            }
+        }
+
+        return 0;
     }
 }
