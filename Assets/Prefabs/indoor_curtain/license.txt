@@ -1,0 +1,11 @@
+Model Information:
+* title:	Indoor Curtain
+* source:	https://sketchfab.com/3d-models/indoor-curtain-e3fab0be1cfb4e3c918620587b5b1b00
+* author:	awkwurdted (https://sketchfab.com/awkwurdted)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Indoor Curtain" (https://sketchfab.com/3d-models/indoor-curtain-e3fab0be1cfb4e3c918620587b5b1b00) by awkwurdted (https://sketchfab.com/awkwurdted) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
