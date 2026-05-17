@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class Timer : MonoBehaviour
             DisplayTime(timeRemaining);
             Debug.Log("Waktu habis!");
             timeEnded = true;
+            SceneManager.LoadScene("LoseScreen");
             return;
         }
 
