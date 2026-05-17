@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
+using StarterAssets;
 
 /// <summary>
 /// Tracks global cleaning progress (books shelved, trash binned, dust wiped).
@@ -208,6 +210,14 @@ public class CleaningProgressManager : MonoBehaviour
     void TriggerWin()
     {
         Debug.Log("Classroom is clean!");
+
+        string winScene = GameSessionManager.GetWinSceneName();
+        if (!string.IsNullOrEmpty(winScene))
+        {
+            StarterAssets.FirstPersonController.SetPauseState(true);
+            SceneManager.LoadScene(winScene, LoadSceneMode.Single);
+            return;
+        }
 
         if (winPanel != null)
         {

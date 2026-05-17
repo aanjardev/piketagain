@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 362112416}
   - component: {fileID: 362112415}
   m_Layer: 5
-  m_Name: Button
+  m_Name: opsi1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -216,7 +216,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 362112417}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1960522697}
+        m_TargetAssemblyTypeName: NpcDialogueMenu, Assembly-CSharp
+        m_MethodName: ChooseOption1
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &362112417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,7 +281,7 @@ GameObject:
   - component: {fileID: 789584979}
   - component: {fileID: 789584982}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: opsi2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,7 +349,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 789584980}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1960522697}
+        m_TargetAssemblyTypeName: NpcDialogueMenu, Assembly-CSharp
+        m_MethodName: ChooseOption2
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &789584980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -958,6 +982,7 @@ GameObject:
   - component: {fileID: 1960522695}
   - component: {fileID: 1960522694}
   - component: {fileID: 1960522693}
+  - component: {fileID: 1960522697}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1048,6 +1073,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1960522697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960522692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 518ba1a81b9ac054e84a6b1001a466c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NpcDialogueMenu
+  dialogueSceneName: NPC
 --- !u!1 &2108488894
 GameObject:
   m_ObjectHideFlags: 0
@@ -1062,7 +1100,7 @@ GameObject:
   - component: {fileID: 2108488896}
   - component: {fileID: 2108488899}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: opsi3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1130,7 +1168,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2108488897}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1960522697}
+        m_TargetAssemblyTypeName: NpcDialogueMenu, Assembly-CSharp
+        m_MethodName: ChooseOption3
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2108488897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1190,5 +1240,5 @@ SceneRoots:
   m_Roots:
   - {fileID: 1682568449}
   - {fileID: 1354344348}
-  - {fileID: 1960522696}
   - {fileID: 867799619}
+  - {fileID: 1960522696}

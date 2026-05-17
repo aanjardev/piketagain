@@ -1,4 +1,5 @@
 using UnityEngine;
+using StarterAssets;
 
 public class DoorEvent : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class DoorEvent : MonoBehaviour
     public AudioSource knockSound;
 
     private bool triggered = false;
+    private bool _knockPausedBecausePause = false;
 
     void Update()
     {
@@ -17,6 +19,8 @@ public class DoorEvent : MonoBehaviour
         {
             TriggerDoorEvent();
         }
+
+        HandleKnockPauseState();
     }
 
     void TriggerDoorEvent()
@@ -29,8 +33,31 @@ public class DoorEvent : MonoBehaviour
         }
 
         if (knockSound != null)
+        {
             knockSound.Play();
+            _knockPausedBecausePause = false;
+        }
 
         Debug.Log("TOK TOK TOK");
+    }
+
+    void HandleKnockPauseState()
+    {
+        if (knockSound == null)
+            return;
+
+        if (FirstPersonController.IsPaused)
+        {
+            if (knockSound.isPlaying)
+            {
+                knockSound.Pause();
+                _knockPausedBecausePause = true;
+            }
+        }
+        else if (_knockPausedBecausePause)
+        {
+            knockSound.UnPause();
+            _knockPausedBecausePause = false;
+        }
     }
 }
