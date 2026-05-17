@@ -32,6 +32,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FlowGeneral.unity
     guid: f055b49f6f0f28b4489fb37e52cc3af4
+  - enabled: 1
+    path: Assets/Scenes/NPC.unity
+    guid: ee586af1fc394cb44912a692bee55479
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
