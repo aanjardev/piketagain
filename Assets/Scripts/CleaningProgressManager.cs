@@ -222,7 +222,7 @@ public class CleaningProgressManager : MonoBehaviour
         T[] items = FindObjectsByType<T>(FindObjectsSortMode.None);
         if (items.Length == 0)
         {
-            items = GameObject.FindObjectsOfType<T>();
+            items = GameObject.FindObjectsByType<T>(FindObjectsSortMode.None);
             if (items.Length > 0 && !string.IsNullOrEmpty(fallbackTag))
                 Debug.Log($"[CleaningProgressManager] Found {items.Length} {typeof(T).Name} via FindObjectsOfType fallback.");
         }

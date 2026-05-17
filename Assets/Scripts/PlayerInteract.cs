@@ -29,13 +29,6 @@ public class PlayerInteract : MonoBehaviour
         Ray ray = Camera.main.ViewportPointToRay(
             new Vector3(0.5f, 0.5f, 0)
         );
-
-        // Debug.DrawRay(
-        //     ray.origin,
-        //     ray.direction * interactDistance,
-        //     Color.red
-        // );
-
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, interactDistance))

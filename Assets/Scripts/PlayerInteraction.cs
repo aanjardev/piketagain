@@ -66,6 +66,8 @@ public class PlayerInteraction : MonoBehaviour
     private Quaternion _kainLapStartRot;
     private Vector3 _kainLapStartPos;
     private bool _progressListOpen = false;
+    private string _lastPrompt = "";
+
 
     // -----------------------------------------------------------------------
     void Awake()
@@ -386,7 +388,12 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (promptPanel == null || promptText == null) return;
 
-        promptText.text = message;
+        if (_lastPrompt != message)
+        {
+            promptText.text = message;
+            _lastPrompt = message;
+        }
+
         promptPanel.alpha = 1f;
         promptPanel.blocksRaycasts = false;
         promptPanel.interactable = false;

@@ -34,7 +34,10 @@ public class ClassroomSpawner : MonoBehaviour
     [Header("=== BOOK ROTATION ===")]
     public float rotationX = 0f;
     public float rotationZ = 90f;
-
+    [Header("=== DUST SETTINGS ===")]
+    public float dustEdgeMargin = 0.08f;
+    public bool randomizeDustScale = true;
+    public Vector2 dustScaleMultiplierRange = new Vector2(0.9f, 1.05f);
     #endregion
 
     // Track occupied positions
@@ -185,7 +188,6 @@ public class ClassroomSpawner : MonoBehaviour
 
     // =========================================================
     #region DUST
-
     void SpawnDust()
     {
         if (dustPrefabs == null || dustPrefabs.Length == 0)
@@ -194,7 +196,6 @@ public class ClassroomSpawner : MonoBehaviour
             return;
         }
 
-        // 1. OTOMATIS CARI SEMUA MEJA PAKAI TAG (Biar nggak usah manual)
         GameObject[] tables = GameObject.FindGameObjectsWithTag(tableTag);
 
         if (tables.Length == 0)
@@ -210,18 +211,47 @@ public class ClassroomSpawner : MonoBehaviour
             if (spawned >= totalDustCount)
                 break;
 
-            // Pilih meja acak
             GameObject randomTable = GetRandom(tables);
             Bounds bounds = GetBounds(randomTable);
 
-            // Beri sedikit margin agar debu tidak *spawn* mengambang di luar tepi meja
-            float marginX = bounds.size.x * 0.1f;
-            float marginZ = bounds.size.z * 0.1f;
+            GameObject prefabAcak = GetRandom(dustPrefabs);
 
-            float x = Random.Range(bounds.min.x + marginX, bounds.max.x - marginX);
-            float z = Random.Range(bounds.min.z + marginZ, bounds.max.z - marginZ);
+            // Ambil scale asli prefab, jangan ditimpa langsung.
+            Vector3 originalScale = prefabAcak.transform.localScale;
 
-            Vector3 pos = new(
+            float scaleMultiplier = randomizeDustScale
+                ? Random.Range(dustScaleMultiplierRange.x, dustScaleMultiplierRange.y)
+                : 1f;
+
+            Vector3 finalScale = originalScale * scaleMultiplier;
+
+            // Untuk Quad, ukuran visual utamanya ada di X dan Y.
+            // Karena debu diputar random, pakai diagonal agar ujung Quad tidak keluar meja.
+            float dustWidth = Mathf.Abs(finalScale.x);
+            float dustHeight = Mathf.Abs(finalScale.y);
+
+            float halfDustFootprint = Mathf.Sqrt(
+                dustWidth * dustWidth + dustHeight * dustHeight
+            ) * 0.5f + dustEdgeMargin;
+
+            // Kalau meja terlalu kecil untuk ukuran debu, skip.
+            if (bounds.size.x <= halfDustFootprint * 2f ||
+                bounds.size.z <= halfDustFootprint * 2f)
+            {
+                continue;
+            }
+
+            float x = Random.Range(
+                bounds.min.x + halfDustFootprint,
+                bounds.max.x - halfDustFootprint
+            );
+
+            float z = Random.Range(
+                bounds.min.z + halfDustFootprint,
+                bounds.max.z - halfDustFootprint
+            );
+
+            Vector3 pos = new Vector3(
                 x,
                 bounds.max.y + surfaceOffset,
                 z
@@ -230,29 +260,22 @@ public class ClassroomSpawner : MonoBehaviour
             if (!IsPositionFree(pos))
                 continue;
 
-            // 2. LOGIKA ROTASI: Menempel rata di meja + Putaran acak
-            Quaternion rot = Quaternion.identity;
-            
-            // Tembak raycast ke bawah untuk mendeteksi permukaan kayu meja
-            if (Physics.Raycast(pos + Vector3.up * 0.1f, Vector3.down, out RaycastHit hit, 1f))
-            {
-                // Bikin debunya mengikuti kemiringan permukaan meja
-                rot = Quaternion.FromToRotation(Vector3.up, hit.normal);
-            }
+            Quaternion rot = Quaternion.Euler(
+                90f,
+                Random.Range(0f, 360f),
+                0f
+            );
 
-            // --- BAGIAN INI YANG DIUBAH ---
-            // Ubah sumbu X menjadi 90f agar Quad tiduran, sumbu Y tetap acak (0-360)
-            rot *= Quaternion.Euler(90f, Random.Range(0f, 360f), 0f);
-            // ------------------------------
-
-            // Spawn Debu
-            GameObject prefabAcak = GetRandom(dustPrefabs);
             GameObject dust = Instantiate(prefabAcak, pos, rot);
+
+            dust.name = $"Dust_{prefabAcak.name}";
             dust.tag = "Dust";
 
-            // 3. LOGIKA SKALA: Bikin ukuran debunya beda-beda (0.5x sampai 1.5x dari ukuran asli)
-            float randomScale = Random.Range(0.5f, 1.5f);
-            dust.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
+            // Scale asli prefab tetap dipakai, cuma dikali sedikit kalau randomizeDustScale aktif.
+            dust.transform.localScale = finalScale;
+
+            // Biar debu ikut meja kalau meja bergeser.
+            dust.transform.SetParent(randomTable.transform, true);
 
             occupiedPositions.Add(pos);
             spawned++;

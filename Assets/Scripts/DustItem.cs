@@ -7,8 +7,8 @@ public class DustItem : MonoBehaviour, IInteractable
     public float wipeDuration = 1.5f;
     public KeyCode wipeKey = KeyCode.E;
 
-    [Header("--- Visual Feedback ---")]
-    public Renderer dustRenderer;
+    // [Header("--- Visual Feedback ---")]
+    // public Renderer dustRenderer;
 
     [Header("--- Audio ---")]
     public AudioClip wipeSound;
@@ -16,6 +16,8 @@ public class DustItem : MonoBehaviour, IInteractable
     private bool  _isCleaned;
     private bool  _isWiping;
     private float _wipeProgress; 
+    private Material _dustMaterial;
+    private float _lastAlpha;
     private AudioSource _audioSource;
     private PlayerInteraction _player; // Untuk mengecek alat pemain
 
@@ -40,23 +42,28 @@ public class DustItem : MonoBehaviour, IInteractable
     {
         if (_isCleaned) return;
 
-        // Syarat bisa lap: Sedang dilihat DITAMBAH pakai Kain Lap
         bool canWipe = _isWiping && _player != null && _player.currentTool == ToolType.KainLap;
 
         if (canWipe && Input.GetKey(wipeKey))
         {
             _wipeProgress += Time.deltaTime / wipeDuration;
+            _wipeProgress = Mathf.Clamp01(_wipeProgress);
+
             UpdateDustAlpha();
             StartWipeAudio();
 
-            if (_wipeProgress >= 1f) FinishWipe();
+            if (_wipeProgress >= 1f)
+                FinishWipe();
         }
         else
         {
-            // Mundur pelan-pelan kalau tombol dilepas atau ganti alat di tengah jalan
-            _wipeProgress -= Time.deltaTime / wipeDuration * 0.5f;
-            _wipeProgress  = Mathf.Max(0f, _wipeProgress);
-            UpdateDustAlpha();
+            if (_wipeProgress > 0f)
+            {
+                _wipeProgress -= Time.deltaTime / wipeDuration * 0.5f;
+                _wipeProgress = Mathf.Max(0f, _wipeProgress);
+                UpdateDustAlpha();
+            }
+
             StopWipeAudio();
         }
     }
@@ -81,16 +88,17 @@ public class DustItem : MonoBehaviour, IInteractable
     // --- Helpers ---
     void UpdateDustAlpha()
     {
-        if (dustRenderer == null) return;
-        
-        // Ambil warna saat ini dari URP Material
-        Color c = dustRenderer.material.GetColor("_BaseColor");
-        
-        // Ubah nilai Alpha-nya sesuai progress
-        c.a = Mathf.Lerp(1f, 0f, _wipeProgress);
-        
-        // Terapkan kembali ke URP Material
-        dustRenderer.material.SetColor("_BaseColor", c);
+        if (_dustMaterial == null) return;
+
+        float alpha = Mathf.Lerp(1f, 0f, _wipeProgress);
+
+        if (Mathf.Approximately(alpha, _lastAlpha)) return;
+
+        _lastAlpha = alpha;
+
+        Color c = _dustMaterial.GetColor("_BaseColor");
+        c.a = alpha;
+        _dustMaterial.SetColor("_BaseColor", c);
     }
 
     IEnumerator FadeAndDestroy()

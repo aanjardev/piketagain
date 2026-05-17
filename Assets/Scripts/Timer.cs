@@ -4,26 +4,37 @@ using TMPro;
 public class Timer : MonoBehaviour
 {
     public float timeRemaining = 900f;
-
     public TMP_Text timerText;
+
+    private bool timeEnded = false;
+    private int lastSecond = -1;
 
     void Update()
     {
-        if (timeRemaining > 0)
-        {
-            timeRemaining -= Time.deltaTime;
+        if (timeEnded) return;
 
-            DisplayTime(timeRemaining);
+        timeRemaining -= Time.deltaTime;
 
-            if(timeRemaining <= 30)
-            {
-                timerText.color = Color.red;
-            }
-        }
-        else
+        if (timeRemaining <= 0)
         {
             timeRemaining = 0;
+            DisplayTime(timeRemaining);
             Debug.Log("Waktu habis!");
+            timeEnded = true;
+            return;
+        }
+
+        int currentSecond = Mathf.FloorToInt(timeRemaining);
+
+        if (currentSecond != lastSecond)
+        {
+            lastSecond = currentSecond;
+            DisplayTime(timeRemaining);
+        }
+
+        if (timeRemaining <= 30 && timerText.color != Color.red)
+        {
+            timerText.color = Color.red;
         }
     }
 
@@ -31,7 +42,6 @@ public class Timer : MonoBehaviour
     {
         int minutes = Mathf.FloorToInt(timeToDisplay / 60);
         int seconds = Mathf.FloorToInt(timeToDisplay % 60);
-
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 }

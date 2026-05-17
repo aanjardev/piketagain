@@ -36,6 +36,7 @@ public class ProgressListController : MonoBehaviour
     public RectTransform collapsedTarget;
     [Tooltip("Enable debug log for progress list open/collapse behavior.")]
     public bool logProgressList = false;
+    private float refreshTimer = 0f;
 
     RectTransform _rect;
     Vector2 _expandedPos;
@@ -93,7 +94,14 @@ public class ProgressListController : MonoBehaviour
 
     void Update()
     {
-        RefreshUI();
+        refreshTimer += Time.unscaledDeltaTime;
+
+        if (refreshTimer >= 0.25f)
+        {
+            refreshTimer = 0f;
+            RefreshUI();
+        }
+
     }
 
     public void SetOpen(bool open)
