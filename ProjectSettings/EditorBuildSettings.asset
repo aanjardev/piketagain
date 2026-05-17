@@ -30,11 +30,17 @@ EditorBuildSettings:
     path: Assets/Scenes/Classroom_shafwan.unity
     guid: 873e77c42a33e7140bcf658ab760658d
   - enabled: 1
+    path: Assets/Scenes/HowToPlayScreen.unity
+    guid: 879c63c43b863e64181ecbd5f10aea4a
+  - enabled: 1
     path: Assets/Scenes/FlowGeneral.unity
     guid: f055b49f6f0f28b4489fb37e52cc3af4
   - enabled: 1
     path: Assets/Scenes/NPC.unity
     guid: ee586af1fc394cb44912a692bee55479
+  - enabled: 1
+    path: Assets/Scenes/Classroom_shafwan2.unity
+    guid: 4ae329ce927b4a34eb84281a6f023609
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
