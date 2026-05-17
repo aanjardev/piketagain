@@ -174,35 +174,44 @@ public class PlayerInteraction : MonoBehaviour
 
         Ray ray = new Ray(_cam.transform.position, _cam.transform.forward);
         bool hit = Physics.Raycast(ray, out RaycastHit info, interactRange, interactableLayers);
-
-        if (hit && info.collider.TryGetComponent(out IInteractable interactable))
+        if(hit)
         {
-            if (interactable != _targetInteractable)
+            Debug.Log("Kena object: " + info.collider.name);
+        }
+
+        if (hit)
+        {
+            IInteractable interactable = info.collider.GetComponentInParent<IInteractable>();
+
+            if (interactable != null)
             {
-                _targetInteractable?.OnLookAway();
-                _targetInteractable = interactable;
-                _targetInteractable.OnLookAt();
-            }
-
-            string prompt = interactable.GetPromptText();
-
-            // UI tambahan kalau sedang pakai Kantong Sampah
-            if (currentTool == ToolType.KantongSampah)
-            {
-                if (interactable is TrashItem)
+                if (interactable != _targetInteractable)
                 {
-                    prompt += $" ({isiKantongSaatIni}/{kapasitasKantong})";
+                    _targetInteractable?.OnLookAway();
+                    _targetInteractable = interactable;
+                    _targetInteractable.OnLookAt();
                 }
-                else if (interactable is TrashCan tc && tc.IsOpen && isiKantongSaatIni > 0)
-                {
-                    if (_isEmptying)
-                        prompt += $"\n[Q] Membuang... {Mathf.RoundToInt(_emptyProgress * 300)}%";
-                    else
-                        prompt += "\nTahan [Q] Buang Sampah";
-                }
-            }
 
-            ShowPrompt(prompt);
+                string prompt = interactable.GetPromptText();
+
+                // UI tambahan kalau sedang pakai Kantong Sampah
+                if (currentTool == ToolType.KantongSampah)
+                {
+                    if (interactable is TrashItem)
+                    {
+                        prompt += $" ({isiKantongSaatIni}/{kapasitasKantong})";
+                    }
+                    else if (interactable is TrashCan tc && tc.IsOpen && isiKantongSaatIni > 0)
+                    {
+                        if (_isEmptying)
+                            prompt += $"\n[Q] Membuang... {Mathf.RoundToInt(_emptyProgress * 300)}%";
+                        else
+                            prompt += "\nTahan [Q] Buang Sampah";
+                    }
+                }
+
+                ShowPrompt(prompt);
+            }
         }
         else
         {
