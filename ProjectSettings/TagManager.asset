@@ -21,8 +21,8 @@ TagManager:
   - Items
   - Floor
   - Player
-  - 
-  - 
+  - Interactable
+  - Environment
   - 
   - 
   - 

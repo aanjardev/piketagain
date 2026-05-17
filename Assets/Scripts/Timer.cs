@@ -3,7 +3,7 @@ using TMPro;
 
 public class Timer : MonoBehaviour
 {
-    public float timeRemaining = 900f;
+    public float timeRemaining = 600f;
 
     public TMP_Text timerText;
 
