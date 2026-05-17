@@ -15,7 +15,7 @@ public class DoorEvent : MonoBehaviour
     void Update()
     {
         // sisa 7 menit
-        if (!triggered && timer.timeRemaining <= 890f)
+        if (!triggered && timer.timeRemaining <= 420f)
         {
             TriggerDoorEvent();
         }
