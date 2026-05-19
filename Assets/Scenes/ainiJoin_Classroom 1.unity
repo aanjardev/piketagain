@@ -7414,7 +7414,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &703988377
 Transform:
   m_ObjectHideFlags: 0
@@ -10063,6 +10063,7 @@ MonoBehaviour:
   progressListController: {fileID: 1622165257}
   logProgressListToggle: 0
   emptyHoldDuration: 2
+  bookReturnHoldDuration: 2
 --- !u!143 &1016817960
 CharacterController:
   m_ObjectHideFlags: 0
@@ -21037,6 +21038,7 @@ MonoBehaviour:
   progressListController: {fileID: 1185303405}
   logProgressListToggle: 1
   emptyHoldDuration: 2
+  bookReturnHoldDuration: 2
 --- !u!143 &2035441295
 CharacterController:
   m_ObjectHideFlags: 0
@@ -21710,7 +21712,7 @@ MonoBehaviour:
   - {fileID: 3017894923463486463, guid: 04a7f4e8648beb8418dc66c238b4fe8d, type: 3}
   - {fileID: 6484110180899546552, guid: daef9a31bd99b854c9932a4bfa794fcb, type: 3}
   - {fileID: 7129690990722957084, guid: aba896ea0a1a8d14e8692f0fcf5ddeaf, type: 3}
-  - {fileID: 8061175511874353449, guid: f0c2feb89ae2e6846a1289cd2fdcaa24, type: 3}
+  - {fileID: 2306541245927275839, guid: d077ba595e4d90c4ebed9a5baba6dc0c, type: 3}
   - {fileID: 8305367984201134423, guid: 90b74451f23939e49ad60110bc400cbc, type: 3}
   - {fileID: 46831200455142396, guid: a4ba29f99e420d24cafa4c69ee22db57, type: 3}
   - {fileID: 8366360290241952525, guid: 15ff5480c6ae2454ebae45cea046ec7d, type: 3}
@@ -21722,7 +21724,7 @@ MonoBehaviour:
   - {fileID: 2996417928285049761, guid: f66568c2df90044469c9a0ef2e8be8cc, type: 3}
   tableTag: Table
   tablesToPopulate: 4
-  totalTrashCount: 15
+  totalTrashCount: 22
   totalDustCount: 10
   floorLayer:
     serializedVersion: 2
