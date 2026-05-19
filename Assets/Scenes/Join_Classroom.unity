@@ -10138,6 +10138,7 @@ MonoBehaviour:
   progressListController: {fileID: 1622165257}
   logProgressListToggle: 0
   emptyHoldDuration: 2
+  bookReturnHoldDuration: 2
 --- !u!143 &1016817960
 CharacterController:
   m_ObjectHideFlags: 0
@@ -16061,7 +16062,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1613465459
 Transform:
   m_ObjectHideFlags: 0
@@ -17364,7 +17365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1688433826
 Transform:
   m_ObjectHideFlags: 0
@@ -21677,6 +21678,7 @@ MonoBehaviour:
   progressListController: {fileID: 1185303405}
   logProgressListToggle: 1
   emptyHoldDuration: 2
+  bookReturnHoldDuration: 2
 --- !u!143 &2035441295
 CharacterController:
   m_ObjectHideFlags: 0
