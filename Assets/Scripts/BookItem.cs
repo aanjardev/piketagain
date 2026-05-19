@@ -73,6 +73,18 @@ public class BookItem : MonoBehaviour, IInteractable, IPickupable
 
     #endregion
 
+    public void OnDropped()
+    {
+        if (_isShelved) return;
+
+        _isPickedUp = false;
+        _wantsPickup = false;
+
+        if (_outline != null)
+            _outline.enabled = false;
+
+        Debug.Log($"{name} dropped.");
+    }
     // -----------------------------------------------------------------------
     public void OnShelved()
     {

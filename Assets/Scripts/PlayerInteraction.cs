@@ -335,6 +335,10 @@ public class PlayerInteraction : MonoBehaviour
             rb.AddForce(_cam.transform.forward * dropForce, ForceMode.Impulse);
         }
 
+        if (_heldItem.TryGetComponent(out BookItem book))
+        {   
+            book.OnDropped();
+        }
         _heldItem = null;
         _heldInteractable = null;
     }
