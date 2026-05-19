@@ -78,7 +78,7 @@ public class DustItem : MonoBehaviour, IInteractable
 
         // Ubah teks berdasarkan alat yang dipakai
         if (_player != null && _player.currentTool != ToolType.KainLap)
-            return "Butuh Kain Lap (Tekan 3)";
+            return "Butuh Kemoceng (Tekan 3)";
 
         return $"Tahan [E] untuk Lap  ({Mathf.RoundToInt(_wipeProgress * 100)}%)";
     }
