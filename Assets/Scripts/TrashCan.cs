@@ -6,7 +6,6 @@ public class TrashCan : MonoBehaviour, IInteractable
     [Header("--- Visual & Animation ---")]
     public Animator animator;
     public ParticleSystem binParticles;
-    public AudioClip emptyBagSound;
 
     [Header("--- Animation Timing ---")]
     [Tooltip("Durasi animasi buka. Jika Buka frame 1-30 dan 24 FPS, isi sekitar 1.2")]
@@ -163,8 +162,7 @@ public class TrashCan : MonoBehaviour, IInteractable
         if (binParticles != null)
             binParticles.Play();
 
-        if (emptyBagSound != null)
-            SoundManager.Instance?.PlaySFXAtPoint(emptyBagSound, transform.position, 1f);
+        AudioLibrary.Instance?.PlayTrashDispose(transform.position);
 
         Debug.Log($"Berhasil membuang {amount} sampah! Total di tong: {_totalSampahDiTong}");
 

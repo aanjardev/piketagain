@@ -10,9 +10,6 @@ public class DustItem : MonoBehaviour, IInteractable
     // [Header("--- Visual Feedback ---")]
     // public Renderer dustRenderer;
 
-    [Header("--- Audio ---")]
-    public AudioClip wipeSound;
-
     private bool  _isCleaned;
     private bool  _isWiping;
     private float _wipeProgress; 
@@ -26,6 +23,9 @@ public class DustItem : MonoBehaviour, IInteractable
         // Mencari script pemain secara otomatis
         _player = FindAnyObjectByType<PlayerInteraction>();
 
+        // Ambil wipe sound dari AudioLibrary
+        AudioClip wipeSound = AudioLibrary.Instance?.dustWipeSound;
+        
         if (wipeSound != null)
         {
             _audioSource = gameObject.AddComponent<AudioSource>();
@@ -36,6 +36,10 @@ public class DustItem : MonoBehaviour, IInteractable
             var controller = _audioSource.gameObject.AddComponent<SfxVolumeController>();
             controller.baseVolume = 0.6f;
         }
+
+        var renderer = GetComponent<Renderer>();
+        if (renderer != null)
+            _dustMaterial = renderer.material;
     }
 
     void Update()

@@ -10,11 +10,24 @@ public class Timer : MonoBehaviour
 
     private bool timeEnded = false;
     private int lastSecond = -1;
+    private float elapsedTime = 0f;
+
+    void Start()
+    {
+        if (timeRemaining <= 0f)
+        {
+            Debug.LogWarning("Timer mulai dengan nilai 0 atau negatif. Mengatur default 600 detik.");
+            timeRemaining = 600f;
+        }
+
+        DisplayTime(timeRemaining);
+    }
 
     void Update()
     {
         if (timeEnded) return;
 
+        elapsedTime += Time.deltaTime;
         timeRemaining -= Time.deltaTime;
 
         if (timeRemaining <= 0)
@@ -23,6 +36,11 @@ public class Timer : MonoBehaviour
             DisplayTime(timeRemaining);
             Debug.Log("Waktu habis!");
             timeEnded = true;
+
+            // Mainkan bell sound saat waktu habis hanya jika game sudah berjalan lebih dari 0.1 detik.
+            if (elapsedTime > 0.1f)
+                AudioLibrary.Instance?.PlayBellSchool(transform.position);
+
             StarterAssets.FirstPersonController.SetPauseState(true);
             SceneManager.LoadScene("LoseScreen");
             return;

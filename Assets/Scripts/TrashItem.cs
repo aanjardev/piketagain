@@ -3,13 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class TrashItem : MonoBehaviour, IInteractable
 {
-    [Header("--- Audio ---")]
-    [Tooltip("Suara saat sampah dimasukkan ke kantong.")]
-    public AudioClip pickupSound;
-
-    [Tooltip("Suara saat sampah masuk ke tong. Opsional.")]
-    public AudioClip binSound;
-
     private Outline _outline;
     private bool _isCleaned = false;
 
@@ -47,8 +40,7 @@ public class TrashItem : MonoBehaviour, IInteractable
             {
                 pi.isiKantongSaatIni++;
 
-                if (pickupSound != null)
-                    SoundManager.Instance?.PlaySFXAtPoint(pickupSound, transform.position, 1f);
+                AudioLibrary.Instance?.PlayTrashPickup(transform.position);
 
                 // Trash dihitung selesai saat masuk kantong
                 CleaningProgressManager.Instance?.ReportTrashComplete();
@@ -74,8 +66,7 @@ public class TrashItem : MonoBehaviour, IInteractable
 
         _isCleaned = true;
 
-        if (binSound != null)
-            SoundManager.Instance?.PlaySFXAtPoint(binSound, transform.position, 1f);
+        AudioLibrary.Instance?.PlayTrashDispose(transform.position);
 
         Debug.Log($"{name} disposed.");
 

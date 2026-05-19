@@ -47,6 +47,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WinScreen_3.unity
     guid: 4750c4ead0adf3a44a01e7099f080c27
+  - enabled: 1
+    path: Assets/Scenes/Join_Classroom.unity
+    guid: 502e35929fda54349a7e5190458d50cb
+  - enabled: 1
+    path: Assets/Scenes/Join_Classroom_shafwan.unity
+    guid: 05237265c0c26d446ae6a7e94e568d7f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

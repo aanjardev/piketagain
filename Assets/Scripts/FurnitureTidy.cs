@@ -9,9 +9,6 @@ public class FurnitureTidy : MonoBehaviour, IInteractable
     
     [Tooltip("Berapa detik waktu animasi kursinya bergeser/merapikan diri?")]
     public float tidyDuration = 0.4f;
-    
-    [Header("--- Audio (Opsional) ---")]
-    public AudioClip slideSound;
 
     private bool _isTidy = false;
     private bool _isMoving = false;
@@ -84,8 +81,7 @@ public class FurnitureTidy : MonoBehaviour, IInteractable
         _isMoving = true;
         OnLookAway(); // Matikan highlight kuning
 
-        if (slideSound != null)
-            SoundManager.Instance?.PlaySFXAtPoint(slideSound, transform.position, 1f);
+        AudioLibrary.Instance?.PlayFurnitureSlide(transform.position);
 
         Vector3 startPos = transform.position;
         Quaternion startRot = transform.rotation;

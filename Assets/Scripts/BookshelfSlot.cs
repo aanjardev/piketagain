@@ -61,6 +61,9 @@ public class BookshelfSlot : MonoBehaviour, IInteractable
             {
                 _booksPlaced++;
 
+                // Mainkan shelve sound saat menaruh buku
+                AudioLibrary.Instance?.PlayBookShelve(transform.position);
+
                 // Panggil fungsi OnShelved di buku (jika ada script BookItem)
                 if (pi.heldItem.TryGetComponent(out BookItem book))
                 {

@@ -102,6 +102,8 @@ public class DeskMessy : MonoBehaviour, IInteractable
         _isMoving = true;
         OnLookAway();
 
+        AudioLibrary.Instance?.PlayFurnitureSlide(transform.position);
+
         Vector3 startPos = transform.position;
         Quaternion startRot = transform.rotation;
         float t = 0f;

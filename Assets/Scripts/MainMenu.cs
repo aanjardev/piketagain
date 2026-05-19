@@ -7,7 +7,7 @@ public class MainMenu : MonoBehaviour
     {
         Debug.Log("clicked start game");
         GameSessionManager.ResetNpcOption();
-        SceneManager.LoadSceneAsync("Classroom_shafwan2");
+        SceneManager.LoadSceneAsync("Join_Classroom_shafwan");
     }
 
     public void QuitGame()

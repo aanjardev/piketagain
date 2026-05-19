@@ -81,6 +81,8 @@ public class ChairMessy : MonoBehaviour, IInteractable
         
         _rb.isKinematic = true; // Pastikan fisika mati saat merapikan
 
+        AudioLibrary.Instance?.PlayFurnitureSlide(transform.position);
+
         Vector3 startPos = transform.position;
         Quaternion startRot = transform.rotation;
         float t = 0f;

@@ -54,6 +54,9 @@ public class BookItem : MonoBehaviour, IInteractable, IPickupable
         _wantsPickup = true;
         _isPickedUp  = true;
         OnLookAway(); // Hilangkan highlight
+
+        // Mainkan pickup sound saat mengangkat buku
+        AudioLibrary.Instance?.PlayBookPickup(transform.position);
     }
 
     #endregion
