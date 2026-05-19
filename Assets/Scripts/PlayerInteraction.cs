@@ -56,6 +56,11 @@ public class PlayerInteraction : MonoBehaviour
     private float _emptyProgress = 0f;
     private bool _isEmptying = false;
 
+    [Header("--- Yellow Book Return ---")]
+    public float bookReturnHoldDuration = 2.0f;
+    private float _bookReturnProgress = 0f;
+    private bool _isReturningBook = false;
+
     // Internal state
     private IInteractable _targetInteractable;
     private GameObject _heldItem;
@@ -110,6 +115,8 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Input.GetKeyDown(interactKey))
             TryInteract();
+
+        HandleReturnBookLogic();
 
         // Mengecek apakah pemain sedang menahan tombol Q
         HandleEmptyTrashLogic();
@@ -252,7 +259,14 @@ public class PlayerInteraction : MonoBehaviour
 
         if (_heldItem != null)
         {
-            ShowPrompt($"[{interactKey}] Jatuhkan Buku");
+            if (_heldItem.TryGetComponent<YellowBookItem>(out _))
+            {
+                ShowPrompt("[Q] Kembalikan buku ke arah pintu");
+            }
+            else
+            {
+                ShowPrompt($"[{interactKey}] Jatuhkan Buku");
+            }
         }
         else
         {
@@ -317,6 +331,12 @@ public class PlayerInteraction : MonoBehaviour
         item.transform.SetParent(holdPoint);
         item.transform.localPosition = Vector3.zero;
         item.transform.localRotation = Quaternion.identity;
+
+        // Callback untuk item yang diambil (khusus untuk quest items)
+        if (item.TryGetComponent(out YellowBookItem yellowBook))
+        {
+            yellowBook.OnPickedUp();
+        }
     }
 
     void ThrowHeldItem()
@@ -388,6 +408,65 @@ public class PlayerInteraction : MonoBehaviour
         {
             _isEmptying = false;
             _emptyProgress = 0f;
+        }
+    }
+
+    void HandleReturnBookLogic()
+    {
+        if (_targetInteractable is DoorNPCInteraction door &&
+            door.IsReturnMode &&
+            GameSessionManager.hasYellowBook &&
+            _heldItem != null &&
+            _heldItem.TryGetComponent<YellowBookItem>(out YellowBookItem yellowBook))
+        {
+            if (Input.GetKey(KeyCode.Q))
+            {
+                _isReturningBook = true;
+                _bookReturnProgress += Time.deltaTime / bookReturnHoldDuration;
+                float percent = Mathf.Clamp01(_bookReturnProgress) * 100f;
+                ShowPrompt($"Tahan [Q] Kembalikan Buku... {Mathf.RoundToInt(percent)}%");
+
+                if (_bookReturnProgress >= 1f)
+                {
+                    CompleteYellowBookReturn(yellowBook, door);
+                }
+            }
+            else
+            {
+                _isReturningBook = false;
+                _bookReturnProgress = 0f;
+            }
+        }
+        else if (_isReturningBook)
+        {
+            _isReturningBook = false;
+            _bookReturnProgress = 0f;
+        }
+    }
+
+    void CompleteYellowBookReturn(YellowBookItem yellowBook, DoorNPCInteraction door)
+    {
+        _bookReturnProgress = 0f;
+        _isReturningBook = false;
+
+        if (_heldItem != null)
+        {
+            Destroy(_heldItem);
+            _heldItem = null;
+            _heldInteractable = null;
+        }
+
+        GameSessionManager.CompleteYellowBookQuest();
+        GameSessionManager.ReturnYellowBook();
+
+        QuestUIController.Instance?.ShowQuestSuccess(
+            "Quest Selesai!",
+            "Lanjutkan piket kelas!"
+        );
+
+        if (door != null)
+        {
+            door.EnableInteraction();
         }
     }
 
